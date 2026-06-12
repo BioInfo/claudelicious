@@ -33,6 +33,7 @@ Every doc is written to be applied, not just read: principle first, then a worke
 
 | You want to... | Go to |
 |----------------|-------|
+| Get the spine in place in your first week | [QUICKSTART.md](QUICKSTART.md) |
 | Read the whole thing as one long story | [STORY.md](STORY.md) |
 | Understand the whole thing in 10 minutes | [00 The map](docs/00-the-map.md) + [Philosophy](PHILOSOPHY.md) |
 | Stop repeating instructions every session | [01 Rules and context](docs/01-rules-and-context.md) |
