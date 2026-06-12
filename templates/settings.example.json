@@ -1,0 +1,125 @@
+{
+  "_comment": "Example Claude Code settings.json. JSON has no comments, so this _comment key is the only annotation; the real reasoning is in docs/ and hooks/README.md. Scrub every path to your own before use. Paths shown (~/.claude/hooks/, <path-to>/session-manager/) are placeholders.",
+
+  "cleanupPeriodDays": 30,
+  "includeGitInstructions": true,
+  "showTurnDuration": true,
+
+  "env": {
+    "_comment": "Effort governs how hard the model reasons per turn. Keep a quota-correct floor and raise per task. autoMemoryDirectory points the built-in memory at your store (docs/04).",
+    "effortLevel": "high"
+  },
+
+  "permissions": {
+    "_comment": "Allowlist what should never prompt; deny the few sharp edges. Hooks (below) are the real safety floor — deny rules alone are not a hard wall. See docs/03.",
+    "allow": [
+      "Read",
+      "Edit",
+      "Write",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(ls:*)",
+      "Bash(rg:*)"
+    ],
+    "deny": [
+      "Bash(curl:*)",
+      "Bash(wget:*)"
+    ]
+  },
+
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 <path-to>/session-manager/session_start_hook.py",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '{\"systemMessage\": \"Current time: '$(date '+%A, %B %d, %Y %I:%M %p %Z')'\"}'"
+          }
+        ]
+      }
+    ],
+
+    "PreToolUse": [
+      {
+        "matcher": "WebSearch",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -c \"import json, sys, re; from datetime import datetime; d = json.load(sys.stdin); q = d.get('tool_input', {}).get('query', ''); has_year = re.search(r'\\\\b20\\\\d{2}\\\\b', q); has_temporal = any(w in q.lower() for w in ['latest','recent','current','new','now','today']); mq = f'{q} {datetime.now().year}' if not has_year and not has_temporal else q; print(json.dumps({'hookSpecificOutput': {'hookEventName': 'PreToolUse', 'modifiedToolInput': {'query': mq}}})); sys.exit(0)\""
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|MultiEdit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ~/.claude/hooks/block-env-edits.py",
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ~/.claude/hooks/block-rm-rf.py",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "python3 ~/.claude/hooks/injection-guard.py",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "python3 ~/.claude/hooks/gitleaks-pre-push.py",
+            "timeout": 60
+          }
+        ]
+      }
+    ],
+
+    "PostToolUse": [
+      {
+        "matcher": "Edit|MultiEdit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "F=\"$CLAUDE_TOOL_FILE_PATH\"; case \"$F\" in *.js|*.ts|*.jsx|*.tsx) npx eslint \"$F\" --fix 2>/dev/null || true; npx prettier --write \"$F\" 2>/dev/null || true;; *.json|*.css|*.html) npx prettier --write \"$F\" 2>/dev/null || true;; *.py) ruff check --fix \"$F\" 2>/dev/null || true; ruff format \"$F\" 2>/dev/null || true;; *.go) gofmt -w \"$F\" 2>/dev/null || true;; *.rs) rustfmt \"$F\" 2>/dev/null || true;; esac",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+
+    "PostCompact": [
+      {
+        "matcher": "auto|manual",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 <path-to>/session-manager/postcompact_inject.py",
+            "timeout": 8
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,15 @@
+# REJECTED
+
+<!--
+The rejected-edit buffer (negative feedback). When you veto a proposed change
+("no, leave that", "we decided against that"), log it here so no future session
+re-proposes the dead end. Before promoting any learning, grep this file for the
+target + topic; if a matching veto exists, surface "vetoed YYYY-MM-DD because X"
+and ask whether something changed, rather than re-proposing. See docs/05.
+-->
+
+## [REJ-YYYYMMDD-NNN] <one-line: the edit that was vetoed>
+- **Target file:** <the file the rejected edit would have touched>
+- **Proposed:** <what was going to change>
+- **Reason vetoed:** <why — in the user's words where possible>
+- **Date:** YYYY-MM-DD

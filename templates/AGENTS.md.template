@@ -1,0 +1,51 @@
+# AGENTS.md — <your name / project> global context
+
+<!--
+This is the top-of-stack context file. It loads every session, before you type
+anything, so it costs attention on every turn. Keep it SHORT: a contract and an
+index, not a knowledge base. Topics longer than ~2 lines move down into their
+own rules/ file and get a one-line pointer here. See docs/01-rules-and-context.
+
+Canonical filename is AGENTS.md at every layer (user-global, machine, project),
+with CLAUDE.md as a symlink to it for tools that still look for the older name.
+-->
+
+## Identity
+
+- **Name:** <your name>
+- **Role:** <what you do, one line>
+- **How I work:** <one or two lines — e.g. "ship and iterate, direct comms, technical depth matters">
+
+## Hard defaults
+
+<!-- The handful of rules true everywhere, every session, that are short enough to live here. -->
+
+- <language/tooling default — e.g. "Python: always `uv`, never global pip">
+- <a destructive-op guardrail — e.g. "never force push; use `trash`, not `rm -rf`">
+- <an asking-vs-acting default — e.g. "ask before anything public-facing or irreversible">
+
+## Rules index
+
+<!-- Each topic with real depth gets its own rules/<topic>.md that auto-loads.
+     This section is just the table of contents. Update it when a rule file changes. -->
+
+- `rules/voice.md` — how I write (the canonical style guide for all comms)
+- `rules/security.md` — secrets, git, destructive ops
+- `rules/model-selection.md` — which model/agent for which task
+- `rules/<topic>.md` — <one-line description>
+
+## Hierarchy
+
+1. **User-global** (this file + `rules/*.md`) — applies everywhere
+2. **Machine-local** (`~/AGENTS.md` per host) — per-host facts
+3. **Project** (`<project>/AGENTS.md`) — per-repo conventions
+
+Each layer inherits from the one above; the more specific layer wins on conflict.
+
+## Why this file stays short
+
+Every standing instruction competes with the actual task for the model's focus.
+A rule that helps one task in fifty is a tax on the other forty-nine. Prune by
+relevance-per-turn and by conflict, not toward a line count. When a rule stops
+earning its turn-by-turn cost, move it down a layer or cut it. A specific fact
+you learned once is a memory (see the memory store), not a rule.

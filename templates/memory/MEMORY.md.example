@@ -1,0 +1,23 @@
+# Memory Index
+
+<!--
+This file loads into context at the start of every session, so it holds INDEX
+LINES, never content. One line per memory: a link and a hook. The detail lives
+in the file the line points to, loaded only when a session needs it. When this
+index grows past its ceiling, move the oldest lines to MEMORY-archive.md — never
+delete, only move. A curation routine owns that trim. See docs/04.
+
+The lines below are sanitized examples showing the shape, one per type.
+-->
+
+## Projects
+
+- [project-widget-pipeline.md](examples/project-widget-pipeline.md) — rebuild of the nightly widget ingest; phase 2 (adapter live, scheduler still TODO). See [[reference-ingest-db]].
+
+## Feedback
+
+- [feedback-heartbeat-whole-pipeline.md](examples/feedback-heartbeat-whole-pipeline.md) — gate the success heartbeat on the whole pipeline, not just the last step, or a green light hides an uncaptured dump. See [[reference-ingest-db]].
+
+## Reference
+
+- [reference-ingest-db.md](examples/reference-ingest-db.md) — the ingest store: location, the one live table, and the producer that writes it.
