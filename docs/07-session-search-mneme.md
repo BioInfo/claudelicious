@@ -63,6 +63,14 @@ A small skill wraps the query so you can call it inline mid-session: ask "have w
 
 ---
 
+## One index, not one per machine
+
+If Claude Code runs on more than one machine, session search wants to be one index, not one per host. It is tempting to install the pipeline locally on each machine and let each one embed its own transcripts. Do not. Left alone, per-host indexes drift apart: one machine gets indexed reliably because it runs the nightly job, a second has the search skill installed but no engine actually running behind it, and a third's sessions accumulate for months and are never embedded at all. Nobody notices until a query that should surface an obvious past session comes back empty, and the honest answer is that machine's sessions were never in the index to begin with.
+
+The fix is structural, not procedural: run the indexing pipeline and the vector store on one machine, and have every other machine query it as a thin client over the network. There is exactly one place that embeds, one place that stores, and every host reaches the same answer to "have we hit this before," regardless of which machine you happened to be on when you solved it.
+
+---
+
 ## Why this is separate from the second brain
 
 mneme and the [second brain](08-second-brain.md) are the same idea pointed at two different corpora. mneme indexes your **sessions** (what you and the agent did). The second brain indexes your **vault** (your notes, memories, learnings, docs). Same retrieval stack in spirit, two stores, because "when did we work on this" and "what do I know about this" are different questions. Keeping them separate keeps each index clean and each query sharp.
@@ -79,4 +87,5 @@ Your transcripts are not exhaust. They are a searchable record of every problem 
 
 - mneme itself is MIT and built to be generic. The config uses a `~`-relative db path and a swappable embedder. Point it at your own transcript directory and run it.
 - The only thing to genericize when sharing your setup is the scheduled-job label and any absolute paths in the config example.
+- The one-shared-index / thin-client pattern is generic. Pick whichever one machine in your setup is always on, and point the rest at it.
 - Your transcripts contain everything you have ever typed at the agent. The index is local. Do not ship the `.lance` store or the transcripts.

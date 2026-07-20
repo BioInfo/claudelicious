@@ -59,6 +59,20 @@ It is tuned not to fire on the legitimate versions: a curl to your own gateway, 
 
 ---
 
+## Deny, then inject: making a rule actually fire
+
+A rule sitting in a system prompt or a config file is available to the model. Available is not the same as enforced. Under load, with enough competing instructions, a model can skip a rule it technically read, and nothing in a passive setup tells you it happened.
+
+The fix is a specific `PreToolUse` pattern: deny the first action that would trigger the rule, inject the rule's full text into context as the reason for the denial, then let the model retry the same action now that the rule is in front of it. The retry succeeds, and the rule has actually been read at the moment it mattered, not just loaded somewhere upstream in the prompt.
+
+The detail that makes this non-obvious: injecting context on the *allow* path does nothing useful for that action. By the time an allowed tool call returns, the action already happened. Whatever you inject afterward can shape the next thing the model does, but it cannot undo the one that already ran without the rule applied. A deny is the only hook outcome that buys a pre-action intervention, because it is the only one that stops the call before it executes and hands the model new information before it tries again.
+
+This was proven on a real failure. A large, always-on instruction telling the model to write in a specific voice was loaded into context on every turn, and it was still measurably not firing, the same way, two days running. The instruction was present. It was not enforced. Moving that rule from passive context into a deny-then-inject hook on the first voice-bearing write of the session fixed it immediately, because getting past the denial required actually reading the rule.
+
+Generalize this: any rule a passive system-prompt sentence cannot reliably hold is a candidate for this pattern. If you have caught the model skipping the same instruction twice, it is worth one small `PreToolUse` hook.
+
+---
+
 ## The quality gate: format on save
 
 A `PostToolUse` hook on file edits that runs the formatter for the language touched (prettier/eslint for JS and TS, ruff for Python, gofmt for Go, rustfmt for Rust), each with `|| true` so a missing tool never blocks. Zero config, fail-open, and every file the harness writes comes out formatted.
@@ -99,4 +113,5 @@ Working, scrubbed versions of these scripts are in [`hooks/`](../hooks/).
 
 - The time-injection hook, the format-on-save hook, and the env-block and gitleaks hooks are generic. Ship as-is.
 - The injection guard references a private gateway host and tailnet range in its allow-tuning. Replace those with your own before sharing, but keep the four detection shapes and the ask-not-deny posture.
+- The deny-then-inject pattern is fully generic and ships as-is; only the rule text you inject (your own voice guide or house style) stays private.
 - Never ship a hook that hardcodes a real path, host, or credential. Genericize first, then run your own gitleaks pass over the `hooks/` directory before publishing.

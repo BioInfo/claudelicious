@@ -92,8 +92,27 @@ The general rule when a provider throws a 429 or times out: switch models, do no
 
 ---
 
+## Delegation: spending the cheap lanes on purpose
+
+Doc 09 got you the engines. This is the discipline for using them.
+
+Once you can point the harness at a flat-rate model, the flagship model's metered quota stops being the only place work runs. So stop spending it on grunt work. A wide, mechanical refactor, a batch of near-identical edits, a boilerplate generation pass: none of that needs your best model. Push it to a flat-rate lane and keep the expensive quota for the work only the flagship does well.
+
+Wrap this in a `delegate` skill that launches the cheap engine as a `claude -p` child through your gateway. The one rule that keeps it safe: **it is opt-in.** It fires only when you name it. A bare "handle this" still runs on the flagship. You decide, per task, that the work is mechanical enough to send down.
+
+**What never delegates.** Judgment, voice, and architecture stay on the flagship, in your main context. The moment a task needs taste, a design call, or writing in your own voice, it is not a delegation candidate. The cheap lane is a factory floor, not a design studio.
+
+**Match the lane to the shape of the work.** Not every engine wants every job. A fan-out-safe lane takes parallel batch edits across many files. A sequential lane takes a multi-tool agentic loop where one step feeds the next. A long-context lane takes one big read-and-summarize. Sending a fan-out job to a sequential engine buys you a wall of rate-limit errors, so pick the lane by the work's shape, not by which alias you typed last.
+
+**The non-negotiable part: verify everything yourself.** The flagship writes the full spec before the child ever launches: the task, the scope, the acceptance criteria, and the gate that proves the work is done. Then the flagship checks the result itself. Read the git diff. Run the gate. You never trust the child's "done," because a cheaper model saying it finished is a claim, not evidence. The child does the typing; the flagship owns the outcome.
+
+Done right, you spend pennies on the volume and keep the flagship for the calls that matter.
+
+---
+
 ## Ship / scrub
 
 - The architecture, the launcher pattern, the tuning table, and the per-provider quirks are generic. Ship as-is.
 - Replace the gateway host, the virtual-key path, and any model route names with placeholders before sharing.
 - Never put a raw provider key in a launcher. The whole point of the gateway is that the client never holds one.
+- The delegation discipline (opt-in, judgment stays on the flagship, verify every result yourself) ships as-is; strip your specific lane aliases and provider names.

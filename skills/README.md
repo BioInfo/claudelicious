@@ -25,6 +25,7 @@ A few real skills, cleaned and scrubbed, to show how the patterns look at full s
 | `self-improving-agent/` | The work-order half of the [learning loop](../docs/05-learning-loop.md). It attributes a failure's root cause before picking the file to edit, treats `environment` as a terminal non-skill cause, and buffers vetoes so dead ends are not re-proposed. |
 | `dream/` | Memory consolidation. The proof that memory is not write-only: a scheduled pass that prunes, merges, and resolves, with a hard rule against deleting confirmed knowledge. |
 | `designing-frontend-uis/` | The [anti-slop](../docs/12-voice-and-antislop.md) discipline applied to UI: vague "be distinctive" advice replaced with a countable pre-flight gate the model cannot pass while shipping the default. |
+| `learn/` | The adopt-or-skip decision as a skill: it reads an external artifact against what you already run, extracts only the genuine deltas, red-teams each, and ends in a borrow / build / install / skip gate. Grades against *your* systems, not the artifact in a vacuum. |
 
 ## The frontmatter is where routing and safety live
 

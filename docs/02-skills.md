@@ -33,6 +33,18 @@ If a skill does none of these, it is a candidate for the cut list. The skills yo
 
 ---
 
+## A skill that decides what to steal
+
+You read a lot of other people's work: a repo someone linked, a paper making the rounds, a new tool, a long thread. The recurring question is almost never "is this good on its own." It is "what do we lift from this into our own stack, and how." That question is a process, and a process is a skill.
+
+A `learn` skill encodes exactly that. You hand it a link and it runs four steps. First it **resolves the artifact**: it fetches the repo or the post and reads it closely enough to know what the thing actually claims, not just its headline. Second it **maps the artifact against what you already have**: it searches your own notes, your skill library, your rules, and your memory, so it can tell a genuinely new idea apart from one you already run under a different name. Third it **extracts only the deltas**: the handful of things this artifact does that you do not, discarding everything you already cover. Fourth it **red-teams each delta against your real setup**, which is a different question from "is this a good idea in the abstract." The question is whether the idea survives contact with the way you actually work, and what breaks if you adopt it.
+
+The output is not a review. It is a lift plan that ends in a decision, one per delta: **borrow** the idea, **build** your own version of it, **install** the thing directly, or **skip** it. Then a decide-gate: plan it further, borrow it now, or implement it.
+
+That gate is what separates `learn` from a review skill. A review grades an artifact on its own merits. `learn` grades the artifact against your systems and hands you the adoption call. The cleanest proof that it works: the first time it ran, it was pointed at the material for a new skill, and its lift plan is what built the next one. A skill whose entire job is deciding what to adopt earned its place by adopting something on day one.
+
+---
+
 ## Anatomy of a skill
 
 A skill is a `SKILL.md` file with YAML frontmatter and a body. The frontmatter is where the routing and safety live.
@@ -137,3 +149,4 @@ And one anti-pattern to enforce: **delta edits, not section rewrites.** When a c
 - The anatomy, the dispatch-only contract, the model-pinning table, and the four-tool maintenance loop are all generic. Ship as-is.
 - The specific skill names in your library are personal. Share the *pattern* of a skill, and a few genuinely generic example skills (see [`skills/`](../skills/)), not your whole list.
 - If a skill body references a private path, host, or system, genericize it before sharing the skill file.
+- The `learn` skill's four-step lift plan (resolve, map, extract deltas, red-team) and its borrow/build/install/skip gate are generic; scrub the private notes, skills, or memory it reaches into in the mapping step.

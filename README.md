@@ -40,6 +40,7 @@ Every doc is written to be applied, not just read: principle first, then a worke
 | Understand the whole thing in 10 minutes | [00 The map](docs/00-the-map.md) + [Philosophy](PHILOSOPHY.md) |
 | Stop repeating instructions every session | [01 Rules and context](docs/01-rules-and-context.md) |
 | Build a skill library that stays small and sharp | [02 Skills](docs/02-skills.md) |
+| Decide what to lift from someone else's repo, paper, or tool | [02 Skills](docs/02-skills.md#a-skill-that-decides-what-to-steal) |
 | Make the agent stop doing dangerous things | [03 Hooks](docs/03-hooks.md) |
 | Fix that Claude does not know the date | [03 Hooks](docs/03-hooks.md#time-injection) |
 | Make Claude remember things across sessions | [04 Memory](docs/04-memory.md) |
@@ -48,6 +49,7 @@ Every doc is written to be applied, not just read: principle first, then a worke
 | Search your own past sessions | [07 Session search (mneme)](docs/07-session-search-mneme.md) |
 | Let Claude semantically search your notes | [08 The second brain](docs/08-second-brain.md) |
 | Run Claude Code on Kimi / MiniMax / GLM / Qwen | [09 Multi-provider](docs/09-multi-provider.md) |
+| Push bulk, mechanical coding to a cheaper flat-rate model | [09 Multi-provider](docs/09-multi-provider.md#delegation-spending-the-cheap-lanes-on-purpose) |
 | Schedule jobs inside Claude Code and on the machine | [10 Crons and scheduling](docs/10-crons-and-scheduling.md) |
 | Build an agent that runs on a heartbeat | [11 Always-on agents](docs/11-always-on-agents.md) |
 | Make the harness write in your voice | [12 Voice and anti-slop](docs/12-voice-and-antislop.md) |

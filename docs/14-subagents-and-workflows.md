@@ -68,6 +68,25 @@ file into its response hits that same ceiling and returns having applied nothing
 file in place and reply with a short summary and a command you can run to check the result. The big
 content stays on disk where it belongs, and you get back a paragraph, which is the reason you forked.
 
+The ceiling itself is a fixed number: 8,000 output tokens per response, and it holds for every subagent
+regardless of which model runs it or what type of worker it is. The main session loop is not subject to it
+at all, only the forked workers are. This was measured directly, across roughly 640,000 responses, and it
+is consistent enough that it has been filed upstream as a harness issue (anthropics/claude-code#78460).
+Knowing the exact number turns "the worker died" from a mystery into arithmetic: add up what you asked it to
+produce plus what a hard reasoning effort will spend thinking, and see if it fits.
+
+---
+
+## The archived folder that still loads
+
+An underscore prefix does not mean "ignored." If you retire a subagent by renaming its folder to something
+like `_archived-agent-name` but leave it inside the same directory the harness scans for agents, it still
+loads. The tool only skips a directory that sits outside the folder it treats as the agent config tree, not
+one that merely looks archived by name. One self-audit found 21 dead agents loading into every session,
+sitting alongside the live ones, because they had been "retired" this way for months. Retire an agent by
+moving its file out of the config tree entirely, not by renaming it in place. A naming convention is not an
+exclusion rule.
+
 ---
 
 ## The dispatch-only contract
