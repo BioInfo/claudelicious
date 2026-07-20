@@ -52,6 +52,24 @@ command. It does not write the words.
 
 ---
 
+## Two ways a subagent dies
+
+Both are common enough to name, and you will hit them in the first week of forking real work.
+
+First, every forked worker has a hard ceiling on how much it can produce in one response, and the
+ceiling is lower than you expect. The worse part is that the model's own reasoning counts against that
+same ceiling. A worker set to think hard on a hard task can spend the whole budget thinking and die
+before it writes a word. The worker is not broken. It thought itself out of room. The fix is to bound
+what you ask for: chunk a large write into smaller pieces, and do not run a producing worker at maximum
+reasoning effort when the job is mechanical.
+
+Second, do not ask a worker to hand a large file back inside its reply. A fork told to paste a rewritten
+file into its response hits that same ceiling and returns having applied nothing. Tell it to edit the
+file in place and reply with a short summary and a command you can run to check the result. The big
+content stays on disk where it belongs, and you get back a paragraph, which is the reason you forked.
+
+---
+
 ## The dispatch-only contract
 
 A specific, reusable pattern: a skill that posts or sends something (to chat, social, email) forks to

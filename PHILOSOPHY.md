@@ -44,6 +44,16 @@ This is why [skills](docs/02-skills.md) are the centerpiece of the cookbook, and
 
 ---
 
+## 4. The judgment budget
+
+The second half of this cookbook adds a fourth idea, and it is the first three read one level up.
+
+When you run one harness, the scarce resource is the model's attention, and idea 2 is how you spend it. When you run several at once, unattended, the scarce resource becomes yours. Every question a lane escalates costs operator attention on the day it lands. A fleet that escalates everything has re-created the exact problem the attention budget solves, one floor higher: the signal drowns, and now it drowns in your inbox instead of the model's context.
+
+So the answer is the same answer, aimed at the human this time. Progressive disclosure of the operator. The harness governs the model's attention with a short standing context and detail one layer down. The [charter](docs/20-the-autonomy-charter.md) governs your judgment with a written boundary: the lane decides what it can, surfaces only what it must, and loads you only when the moment calls for it. Attention is what you protect at level one. Judgment is what you protect at level five.
+
+---
+
 ## The loop underneath all of it
 
 These three ideas connect through one flywheel. It is the thing that makes the harness compound instead of just accumulate.
@@ -66,6 +76,8 @@ the vault gets embedded and becomes semantically searchable
    ▼
 the next session starts already knowing what this one learned
 ```
+
+There is a second way into the same loop once lanes run on their own. When an autonomous lane escalates something its [charter](docs/20-the-autonomy-charter.md) should have handled, the fix is a charter edit at the source, the same move a corrected skill gets. Escalations feed the flywheel the way corrections do.
 
 Two supporting commitments make the loop trustworthy:
 

@@ -81,6 +81,10 @@ You will see these names in the docs. They are referred to directly because they
 | **continuum** | A reader and router over the durable memory homes (memory, learnings, rules). | [04](04-memory.md) |
 | **Pulsar** | A persistent agent that runs on a heartbeat and acts as a chief of staff. | [11](11-always-on-agents.md) |
 | **Slopless** | The voice system that makes the harness write like you, not like an LLM. | [12](12-voice-and-antislop.md) |
+| **charter** | A per-lane file naming what an autonomous lane may decide alone and what it escalates. | [20](20-the-autonomy-charter.md) |
+| **lane** | One chartered autonomous harness working a single slice of a larger project. | [21](21-lanes-and-the-cockpit.md) |
+| **cockpit** | The operator's session: it runs no loop, it surfaces what needs a human and stages the rest. | [21](21-lanes-and-the-cockpit.md) |
+| **seam** | The human gate where a fleet's escalations land as one ranked queue. | [22](22-the-seam.md) |
 
 ## Beyond the core: operations and the long read
 
@@ -94,6 +98,41 @@ The numbered docs continue past the diagram with the operational layer:
 - **[19 Running wide open](19-running-wide-open.md)** — the candid case for broad machine access, and the deterministic floor that makes it sane.
 
 For the whole system as a narrative rather than a reference, read [the story](../STORY.md). It ties the philosophy, the architecture, and the why-it-matters into one long read.
+
+## Running more than one: Part Two
+
+Everything above is one harness. The second arc of this cookbook, docs 20 through 24, is what the picture looks like when you run several at once and are not watching any of them.
+
+```
+                    ┌────────────────────────────┐
+                    │   YOU  ·  the cockpit       │  runs no loop of its own:
+                    │   inspect · rule · stage    │  surfaces what needs a human
+                    └──────────────┬──────────────┘
+                                   │   the seam (22): one ranked human queue
+              ┌────────────────────┼────────────────────┐
+              ▼                    ▼                    ▼
+       ┌────────────┐       ┌────────────┐       ┌────────────┐
+       │  LANE A    │       │  LANE B    │       │  LANE C    │   each lane is a
+       │  charter   │       │  charter   │       │  charter   │   FULL harness (the
+       │  cursor    │       │  cursor    │       │  cursor    │   diagram above),
+       └─────┬──────┘       └─────┬──────┘       └─────┬──────┘   held to a charter (20)
+             └────────────────────┼────────────────────┘
+                                  ▼
+                    ┌────────────────────────────┐
+                    │  SHARED FILES = the bus     │  handoff inbox · ledger · vault
+                    │  lanes coordinate here      │  (files, never messages)
+                    └────────────────────────────┘
+```
+
+Each lane is a full harness, the diagram at the top of this page, wrapped in a [charter](20-the-autonomy-charter.md) that says what it may decide alone. Lanes coordinate through shared files, not messages, the same vault-is-the-hub logic already at work inside one harness. You sit at the cockpit, which runs no loop of its own; it surfaces what needs a human across every lane and stages the rest. The one place your judgment gets spent is the seam.
+
+- **[20 The autonomy charter](20-the-autonomy-charter.md)** — trust written down: what a lane decides alone, what it escalates, and the ledger that records every time the line moves.
+- **[21 Lanes and the cockpit](21-lanes-and-the-cockpit.md)** — one project as parallel chartered lanes, coordinating through files, and the operator session that runs no loop.
+- **[22 The seam](22-the-seam.md)** — the human gate as a designed interface, and the two ways it fails.
+- **[23 Instruments](23-instruments.md)** — how to trust work you did not read: verify the artifact, not the exit code.
+- **[24 The model budget](24-the-model-budget.md)** — judgment on the premium model, labor delegated off it.
+
+One correction Part Two makes to the ladder in [the philosophy](../PHILOSOPHY.md): the top rung, lived in, is not a dark factory. It is supervised autonomy with one light on, and the light is the cockpit.
 
 ## The one-sentence version
 

@@ -47,3 +47,9 @@ Everything past the spine is real and worth having, later. Skip it this week:
 By the end of the week the test is simple. Start a brand-new session and ask it to pick up where the last one left off. If it reads your continuity file, knows the facts you taught it, reaches for the skill you wrote, and respects the constraints in your `AGENTS.md`, the spine is real. Now you add to it.
 
 The harness is something you wear, not something you open. The first week is where it starts to fit.
+
+---
+
+## And when you are ready for Part Two
+
+Not yet. [Part Two](docs/00-the-map.md#running-more-than-one-part-two) is about running several of these at once, and it is the fastest way to build something impressive you cannot maintain. The gate is simple: do not build autonomous lanes until one harness has run a month boring, under your eye, with the spine above doing real work. The second arc assumes you already trust the first. Earn that, then go read it.

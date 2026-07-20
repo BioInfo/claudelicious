@@ -86,6 +86,12 @@ to standing up a small staff of agents is not money and it is not a special runt
 discipline to give each one a narrow role and the silence-by-default rule, so eight agents produce
 signal instead of eight times the noise.
 
+That squad is still, mostly, watching. Each agent wakes, checks its corner, and stays quiet. The next
+threshold is when a member stops being a checker and starts being a worker with a written boundary:
+something that decides and acts on its own, inside a charter, while you are not looking. That is where
+the second arc of this cookbook begins. See [the autonomy charter](20-the-autonomy-charter.md) and
+[lanes and the cockpit](21-lanes-and-the-cockpit.md).
+
 ---
 
 ## Ship / scrub

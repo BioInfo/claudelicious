@@ -46,6 +46,12 @@ that is a deliberate, named exception you open on purpose, not the default every
 Source of truth is decided by designation and version history, never by file modification time. A
 machine's clock is not an argument about which copy is real.
 
+One hazard the directional rule does not fully cover: two live sessions editing the same shared file at
+the same moment. A second session can silently overwrite a change you just made, and the service comes
+back up green, so nothing tells you. Treat a shared file as something you never restore your own copy
+over. Re-apply your change on top of whatever is there now, add only the files you touched, and confirm
+by reading the result back rather than trusting that the write succeeded.
+
 ---
 
 ## What flows between them

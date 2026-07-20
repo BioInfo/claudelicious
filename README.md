@@ -19,6 +19,8 @@ It is **not a catalog**. The community already maintains one of those at [awesom
 
 Most "here is my setup" repos are a flat list. This one leads with the systems underneath the skills, because those are the part you cannot reverse-engineer from a screenshot.
 
+Part One builds one harness. Part Two, the second arc, is what it looks like to run several of them at once: chartered lanes working in parallel while you stand at a single seam and rule on what surfaces.
+
 ---
 
 ## Reading this as an agent
@@ -56,6 +58,12 @@ Every doc is written to be applied, not just read: principle first, then a worke
 | Tune `settings.json` so a session behaves the way you want | [17 Settings](docs/17-settings.md) |
 | Connect the harness to mail, calendar, search, a browser | [18 MCP](docs/18-mcp.md) |
 | Understand running with broad machine access, and the guards | [19 Running wide open](docs/19-running-wide-open.md) |
+| **Part Two — running several harnesses at once** | |
+| Let an autonomous agent decide some things without asking | [20 The autonomy charter](docs/20-the-autonomy-charter.md) |
+| Run one project as parallel autonomous lanes | [21 Lanes and the cockpit](docs/21-lanes-and-the-cockpit.md) |
+| Design the human gate so a fleet does not drown you | [22 The seam](docs/22-the-seam.md) |
+| Trust work you did not read | [23 Instruments](docs/23-instruments.md) |
+| Spend the premium model only where it earns | [24 The model budget](docs/24-the-model-budget.md) |
 
 Templates and copy-able files live in [`templates/`](templates/), [`hooks/`](hooks/), [`skills/`](skills/), and [`settings/`](settings/).
 
@@ -79,7 +87,7 @@ A great model with no harness is a demo. A harness with a great model is a secon
 
 ## The shape of it
 
-To make the scale concrete: a skill library deliberately pruned from a peak of over 130 down to a curated few dozen, because the cut is the craft and not a footnote to it. Around 15 MCP servers, each a doorway into a real system. A four-tier memory taxonomy over roughly seventy thousand plain-markdown vault documents. A mesh of five machines from a laptop to a GPU box. Eight named agents, each with its own role and memory, for less than a couple of lunches a month.
+To make the scale concrete: a skill library deliberately pruned from a peak of over 130 down to a curated few dozen, because the cut is the craft and not a footnote to it. Around 15 MCP servers, each a doorway into a real system. A four-tier memory taxonomy over roughly seventy thousand plain-markdown vault documents. A mesh of five machines from a laptop to a GPU box. Eight named agents, each with its own role and memory, for less than a couple of lunches a month. That figure holds for the heartbeat agents. The chartered lanes of Part Two do not run on lunch money; several full harnesses in parallel is a real bill, which is why Part Two closes on a [model budget](docs/24-the-model-budget.md).
 
 None of those numbers is the point. That they are *governed* is the point. A system this size that nobody pruned would collapse under its own context.
 

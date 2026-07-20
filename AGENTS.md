@@ -10,7 +10,7 @@ A reference cookbook. It documents one operator's full Claude Code setup and the
 
 - `README.md` — front door and findability index.
 - `PHILOSOPHY.md` — the three ideas that hold the system together.
-- `docs/` — the comprehensive reference, numbered in read order (`00` through `13`). Each doc is self-contained.
+- `docs/` — the comprehensive reference, numbered in read order (`00` through `24`), in two arcs: Part One (`00`–`19`) builds one harness, Part Two (`20`–`24`) is running several of them at once. Each doc is self-contained.
 - `templates/` — copy-able files: an `AGENTS.md` template, memory and learning templates, a settings example, generic rule examples.
 - `hooks/` — scrubbed, working hook scripts you can adapt.
 - `skills/` — a few generic example skills.

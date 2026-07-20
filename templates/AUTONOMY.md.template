@@ -1,0 +1,42 @@
+# AUTONOMY — <lane name>
+
+> The written boundary for one autonomous lane: what it may decide on its own, what it must bring to a
+> human, and a dated log of every time that line moved. Start narrow. Widen only what the lane has
+> earned, and log it. Reasoning and worked example: `docs/20-the-autonomy-charter.md`.
+
+## Loop contract (every tick)
+
+1. Sense: what changed since the last tick. Run this on a cheap, fast model; return `idle` or
+   `escalate: <items>`. The reasoning model only engages when this pass finds something.
+2. Find: the highest-value unblocked work in this lane.
+3. Do: anything on the AUTO list below, with no gating.
+4. Coordinate: post any cross-lane handoff to the receiving lane's inbox (see `handoff.md.template`).
+5. Surface: write anything on the ESCALATE list to the human queue.
+6. Exit: if there is no high-value work this tick, say so in one line and stop. Do not idle to the next
+   wake.
+
+## AUTO (do without asking)
+<!-- Reversible, low blast radius, verifiable by the lane itself. Be concrete; a vague AUTO list is a
+     wide one. -->
+- <e.g. additive edits to files this lane owns>
+- <e.g. mechanical fixes: stale dates, dead links, a wrong number in a doc already open>
+- <e.g. research, drafting, and analysis that stays inside this lane>
+
+## ESCALATE (always bring to the human)
+<!-- Irreversible, outward-facing, or a genuine preference fork with no signal. A fixed line, not a
+     call the lane makes carefully. -->
+- Anything that sends, posts, publishes, or deploys.
+- Anything that spends money.
+- Any change to a standing rule, a boundary, or another lane's state.
+- Anything irreversible. Any preference fork where the lane has no signal about what you would want.
+
+## Calibration
+- Proceed when about ninety percent sure what the human would say, and state the assumption you made.
+  Ask below that.
+- A grant of the channel is not a grant of the call. Being told to carry something is not authority to
+  commit the human to it.
+
+## Boundary ledger (append-only, one line each, dated)
+<!-- Every time the AUTO/ESCALATE line moves, in either direction, log it here. This is what makes the
+     charter a contract instead of a memory. -->
+- <YYYY-MM-DD>  Created narrow. Only <the initial AUTO set> is auto.

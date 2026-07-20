@@ -250,6 +250,26 @@ sleep while the thing runs.
 
 ---
 
+## The second threshold
+
+This story used to end on that sentence about trust, and leave it there. In hindsight that was a loaded gun on the mantelpiece, because a ceiling made of trust is not fixed. You can raise it. How you raise it is the whole of what came next.
+
+There was a morning, a few weeks after all of the above was working, when there were four of them. Four harnesses, not one. Each pointed at a different slice of the same project, each running its own loop, none of them waiting for a prompt. One was doing comms. One was working a model. Two were somewhere in between. The operator's entire job that morning was to read one short list of the things the four of them could not decide alone, rule on three of them, and go make coffee.
+
+That is a different job than the one this cookbook started with. The first job was doing the work with a very good tool. This one is running the pass: standing at a single station while the work happens at others, inspecting what surfaces, sending back what is wrong, and trusting the rest because you built the thing that earns it.
+
+The mechanism that makes it possible is boring. It is a file. Each lane has a charter, a plain markdown boundary that says what the lane may decide alone and what it must bring to a human. Write that down and an unattended agent is a system with a known edge. Leave it in your head and it is four things you have to stay awake for, which is not four harnesses, it is one very tired operator.
+
+Notice what the charter is, underneath. It is the attention budget again, aimed at a different target. The first half of this cookbook kept the model's standing context small so its attention landed where it was needed. The charter keeps the operator's decisions small so judgment lands where it is needed. The scarce resource moved from the model's attention to yours, and the fix was the same fix: load the expensive thing only when the moment calls for it. One level up, it is the same cookbook.
+
+Which lets me correct the ladder from the top of this story. Rung five was labelled Dark Factory, and the name is wrong for the thing it turns out to be. The factory is not dark. There is one light on, and it is the operator's cockpit: the session that runs no loop of its own and exists to read the queue and rule on it. Autonomy without that light is the failure mode. The art of the top rung is the seam where a human still stands.
+
+One caveat, paid for in exactly this coin. This layer is weeks old and still settling. Early confidence in it was wrong often enough that one of the new docs is entirely about how to trust work you did not read, and why a green check that cannot fail is worse than no check at all. The wins are in Part Two. So are the scars, next to them, because that is the only way this part is true.
+
+If the first half of the cookbook was about building a harness you could wear, the second half is about what happens when you are strong enough to run several at once and disciplined enough to still watch them. It starts at [the map](docs/00-the-map.md), in the second diagram, and runs through five short docs. Read it when one harness of yours has been boring for a month. Not before.
+
+---
+
 ## Where to start
 
 Do not try to build all five rungs this week. Move one level from where you are. If you are at Copilot,
