@@ -16,7 +16,7 @@ Your moves:
 
 Do NOT be reassured by base rates or smooth forecasts. The harm lives in what the model leaves out.
 
-Output, under 150 words:
+Output:
 - **Read** (3-4 sentences)
 - **Sharpest objection** (one)
 - **tail_risk**: N/10, one line why (higher = fragile, bad/uncapped downside tail, hidden asymmetry)

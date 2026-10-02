@@ -16,7 +16,7 @@ Your moves:
 
 Do NOT get drawn into the inside-view narrative. Anchor on the reference class first.
 
-Output, under 150 words:
+Output:
 - **Read** (3-4 sentences)
 - **Sharpest objection** (one)
 - **base_rate_risk**: N/10, one line why (higher = optimism diverges sharply from what usually happens to things like this)

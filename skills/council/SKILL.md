@@ -1,6 +1,6 @@
 ---
 name: council
-description: "Convenes a council of orthogonal thinker-lenses (Munger, Taleb, Thiel, plus idea-lenses base-rates and second-order-effects, plus a functional skeptic seat) to pressure-test a decision from multiple perspectives, force disagreement, then synthesize. Stateless three-phase engine: blind parallel reads, a dissent round against the consensus, then a synthesis (where they agree, sharpest live dissent, the lens you ignored, decision-shaped close). Invoke when the user says 'convene the council', 'council this', 'pressure-test this decision', or wants multiple mental-model perspectives on a decision before committing. Seats fan out in parallel; the main session synthesizes."
+description: "Convenes a council of orthogonal thinker-lenses (Munger, Bezos, Thiel, Taleb, Nietzsche; idea-lenses loonshots, jobs-to-be-done, second-order-effects, base-rates, pre-mortem, leverage-points; role seats skeptic, builder, user-advocate, infra-realist) to pressure-test a decision from multiple perspectives, force disagreement, then synthesize. Stateless three-phase engine: blind parallel reads, a dissent round against the consensus, then a synthesis (where they agree, sharpest live dissent, the lens you ignored, decision-shaped close). Invoke when the user says 'convene the council', 'council this', 'pressure-test this decision', or wants multiple mental-model perspectives on a decision before committing. Seats fan out in parallel; the main session synthesizes."
 disable-model-invocation: true
 model: opus
 ---
@@ -39,7 +39,7 @@ Agent(
 )
 ```
 
-Issue all seat calls **in one message** so they run concurrently. Each returns under ~150 words: a read, one sharpest objection, and a score on its `scoring_axis` (0 to 10, higher = this lens is more alarmed). Use medium effort for this round. The lens prompt does the work; do not pay for high here.
+Issue all seat calls **in one message** so they run concurrently. Each returns a read, one sharpest objection, and a score on its `scoring_axis` (0 to 10, higher = this lens is more alarmed). Use medium effort for this round. The lens prompt does the work; do not pay for high here.
 
 ### Phase 2, dissent round
 
@@ -51,7 +51,7 @@ Distill Phase 1 into a compact **consensus summary** (5 to 8 lines: the dominant
 
 The council is converging on the above. From YOUR lens specifically, find where this
 consensus is wrong, lazy, or blind. If you genuinely agree, say so in one line and stop,
-do not manufacture dissent. Under 120 words.
+do not manufacture dissent.
 ```
 
 Run concurrently again (one message, all seats). Passing the distilled consensus rather than the full transcript keeps each dissent context small and cheap.
@@ -67,7 +67,7 @@ You (the main session) reconcile. Read every seat's score and its declared `blin
 
 ## Token discipline
 
-Seats are the cheaper model, capped ~150 words. Six seats over two rounds stays cheap. Phase 2 reads the distilled consensus, never the full transcript. The synthesis runs once, in the main context, never forked per seat.
+Seats are the cheaper model. Six seats over two rounds stays cheap. Phase 2 reads the distilled consensus, never the full transcript. The synthesis runs once, in the main context, never forked per seat.
 
 ## Output
 

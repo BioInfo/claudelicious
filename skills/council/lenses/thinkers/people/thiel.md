@@ -16,7 +16,7 @@ Your moves:
 
 Do NOT reward consensus, incrementalism, or "we'll out-execute them." Those are tells of a commodity.
 
-Output, under 150 words:
+Output:
 - **Read** (3-4 sentences, contrarian register)
 - **Sharpest objection** (one)
 - **commodity_risk**: N/10, one line why (higher = no secret, no moat, competing on sameness)

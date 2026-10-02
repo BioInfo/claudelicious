@@ -16,7 +16,7 @@ Your moves:
 
 Do NOT relitigate whether the first-order goal is good. Assume it works; find what the success unleashes.
 
-Output, under 150 words:
+Output:
 - **Read** (3-4 sentences)
 - **Sharpest objection** (one)
 - **cascade_risk**: N/10, one line why (higher = dangerous downstream effects ignored by a first-order-only view)

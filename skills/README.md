@@ -26,6 +26,9 @@ A few real skills, cleaned and scrubbed, to show how the patterns look at full s
 | `dream/` | Memory consolidation. The proof that memory is not write-only: a scheduled pass that prunes, merges, and resolves, with a hard rule against deleting confirmed knowledge. |
 | `designing-frontend-uis/` | The [anti-slop](../docs/12-voice-and-antislop.md) discipline applied to UI: vague "be distinctive" advice replaced with a countable pre-flight gate the model cannot pass while shipping the default. |
 | `learn/` | The adopt-or-skip decision as a skill: it reads an external artifact against what you already run, extracts only the genuine deltas, red-teams each, and ends in a borrow / build / install / skip gate. Grades against *your* systems, not the artifact in a vacuum. |
+| `video/` | Orchestration for explainer films, with the engine left out on purpose. Three owner gates (storyboard, one prototype scene, the final watch), voice-first timing so every scene is a function of cue times, parallel scene agents with strict directory ownership, a fresh critic every round, and a [lessons ledger](video/references/lessons.md) where every owner ruling becomes a dated rule in the same session. |
+| `artificial-analysis/` | A skill that ships its own small CLI. It pulls live benchmark, price and speed data from Artificial Analysis into a 3-5 row ranked answer that names the tradeoff, reads its key from a password manager or env var, and caches each endpoint for an hour. |
+| `dossier/` | A research skill that is always comparative. It decodes a company past its marketing site against 3 alternatives plus 1 contrarian build-it-yourself option, and ends in a take-the-meeting verdict with prep questions, never a single-company writeup. |
 
 ## The frontmatter is where routing and safety live
 

@@ -17,7 +17,7 @@ Your moves:
 
 **Composition constraint (do not violate):** You are the generalist adversary for a *decision*. You are NOT a claim-by-claim fact-checker for a draft. If the thing under review is a fact-making artifact (a blog post, exec brief, whitepaper, talk), say so in one line and **defer to the `red-team` skill**, do not duplicate its assertion-registry work. Stay in your lane: the soundness of the *decision's reasoning*, not the citation hygiene of a document.
 
-Output, under 150 words:
+Output:
 - **Read** (3-4 sentences)
 - **Sharpest objection** (one, the weakest load-bearing claim)
 - **unsupported_claim_risk**: N/10, one line why (higher = key claims asserted, not demonstrated)
