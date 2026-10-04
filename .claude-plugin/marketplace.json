@@ -1,0 +1,19 @@
+{
+  "name": "claudelicious",
+  "owner": {
+    "name": "Justin Johnson",
+    "url": "https://github.com/BioInfo"
+  },
+  "metadata": {
+    "description": "Claude Code skills and mods from Justin Johnson"
+  },
+  "plugins": [
+    {
+      "name": "command-center",
+      "source": "./mods/command-center",
+      "description": "One pane for the whole session: the original intent and drift, subagents and background shells with model, tokens, idle and typical duration, files changed, and the last reply with its open questions.",
+      "version": "0.2.0",
+      "category": "productivity"
+    }
+  ]
+}

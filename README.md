@@ -67,7 +67,20 @@ Every doc is written to be applied, not just read: principle first, then a worke
 | Trust work you did not read | [23 Instruments](docs/23-instruments.md) |
 | Spend the premium model only where it earns | [24 The model budget](docs/24-the-model-budget.md) |
 
-Templates and copy-able files live in [`templates/`](templates/), [`hooks/`](hooks/), [`skills/`](skills/), and [`settings/`](settings/).
+Templates and copy-able files live in [`templates/`](templates/), [`hooks/`](hooks/), [`skills/`](skills/), [`settings/`](settings/), and [`mods/`](mods/).
+
+---
+
+## Mods
+
+Mods are Claude Code plugins built on function hooks. A hook module subscribes to session events (a prompt, a tool call, a finished turn) and can draw a pane beside the session, show a toast, or add a line to the model's context. This repo is also a plugin marketplace that ships them:
+
+```
+/plugin marketplace add BioInfo/claudelicious
+/plugin install command-center@claudelicious
+```
+
+The first one is [command-center](mods/command-center/): one pane with the session's intent, running jobs, files changed, the last reply's open questions, and the 5h/7d limit pace. Watch the [two-minute walkthrough](https://youtu.be/rY4fyCVfD5c). The index is [`mods/`](mods/).
 
 ---
 
@@ -116,7 +129,7 @@ The ideas keep developing in public on two blogs: **[AIXplore](https://ai.rundat
 ## License
 
 Dual-licensed by content type. The **code** you would copy into your own setup —
-everything in `templates/`, `hooks/`, and `skills/` — is **MIT** ([`LICENSE`](LICENSE)),
+everything in `templates/`, `hooks/`, `skills/`, and `mods/` — is **MIT** ([`LICENSE`](LICENSE)),
 so use it however you like. The **prose** — `docs/`, this README, and `PHILOSOPHY.md` —
 is **CC BY-NC 4.0** ([`LICENSE-docs`](LICENSE-docs)): share and adapt it with
 attribution, but not for commercial repackaging.
