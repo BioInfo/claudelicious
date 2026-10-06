@@ -1,0 +1,36 @@
+/* theme.css: THE file you edit to give your films a look. Loaded after tokens.css in every scene,
+   so anything here overrides the defaults. Keep it to custom properties (and @font-face if you vendor
+   fonts); scenes read colours through var(--...) and MV.tok('...'), so a change here restyles every film.
+
+   Rules that keep renders correct:
+   - ONE accent. It marks the answer, the new value or the keyword, nothing else.
+   - Keep --accent-deep and --ink-2 at 4.5:1 contrast against --bg for small text.
+   - Fonts: vendored woff2 only, referenced by a path under kit/ (e.g. url(fonts/MyFace.woff2)).
+     Never @import, never a web-font CDN, never a bare system family name: the renderer substitutes. */
+
+:root{
+  /* dark ground (default) */
+  --bg:#0f1115; --panel:#171a21; --panel-2:#20242d; --line:#2c313c;
+  --ink:#eef0f3; --muted:#9aa1ad; --dim:#5b616d;
+  --accent:#4f8cff;          /* the one accent */
+  --accent-ink:#0f1115;      /* text on an accent fill */
+  --accent-2:#f2a541;        /* optional second accent, use sparingly */
+  --accent-deep:var(--accent);
+  --ink-2:var(--muted);
+
+  /* type: generic stacks by default. Example with a vendored face:
+     @font-face{font-family:"Kit Sans";src:url(fonts/kit-sans.woff2) format("woff2");font-weight:100 900;font-display:block}
+     then: --font-display:"Kit Sans",sans-serif; */
+  --font-display:sans-serif;
+  --font-body:sans-serif;
+  --font-serif:serif;
+  --font-mono:monospace;
+}
+
+/* light variant: <div id="root" class="cream"> */
+.cream{
+  --bg:#f4f5f7; --panel:#e9ebef; --panel-2:#dfe2e8; --line:#c9ced8;
+  --ink:#12151b; --muted:#555c68; --dim:#9aa1ad;
+  --accent:#2f6fe8; --accent-ink:#f4f5f7; --accent-2:#c47d12;
+  --accent-deep:#1f55bf; --ink-2:#3c424d;
+}

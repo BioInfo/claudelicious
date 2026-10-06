@@ -1,0 +1,194 @@
+#!/usr/bin/env bash
+# mvid: narrated motion-graphics films from HTML scenes (HyperFrames + Kokoro + ffmpeg).
+#
+#   mvid new <slug> [--mode explainer|paper|demo|reel|loop] [--title "..."]
+#   mvid scene <slug> <id>...                   scaffold scenes/<id>/ from the kit template
+#   mvid voice <slug> [scene...] [--voice V] [--speed S] [--force]
+#   mvid render <slug> [scene...] [--draft] [--no-check] [--jobs N]
+#   mvid critic <slug> [--video P] [--scene ID] [--strict] [--skip-transcript] [--skip-readcheck]
+#   mvid assemble <slug> [--out P] [--captions] [--formats L] [--music P|pad|none] [--version N]
+#
+# Paths:
+#   engine dir   MVID_HOME, else the directory above this script
+#   work root    --root DIR (first argument) or MVID_ROOT, else the current directory
+#                films live in <root>/films/<slug>, cuts in <root>/out/<slug>
+# Contract: ../references/contract.md (verbs, scene shape, renderer traps).
+set -uo pipefail
+
+die() { echo "mvid: $*" >&2; exit 1; }
+
+# resolve the engine dir through symlinks (BSD readlink has no -f)
+src="${BASH_SOURCE[0]}"
+while [ -L "$src" ]; do
+  d="$(cd -P "$(dirname "$src")" && pwd)"; src="$(readlink "$src")"
+  case "$src" in /*) ;; *) src="$d/$src";; esac
+done
+ENGINE="${MVID_HOME:-$(cd -P "$(dirname "$src")/.." && pwd)}"
+LIB="$ENGINE/lib"
+KIT="${MVID_KIT_DIR:-$ENGINE/kit}"
+
+ROOT="${MVID_ROOT:-$PWD}"
+if [ "${1:-}" = "--root" ]; then
+  [ -n "${2:-}" ] || die "--root needs a directory"
+  ROOT="$2"; shift 2
+fi
+mkdir -p "$ROOT" || die "cannot create root $ROOT"
+ROOT="$(cd "$ROOT" && pwd)"
+FILMS="$ROOT/films"
+export MVID_HOME="$ENGINE" MVID_ROOT="$ROOT"
+
+# stdlib-only tools (scaffold, render) run on any python3; the rest run in the uv project.
+PY3="$(command -v python3 || true)"
+upy() {
+  if [ -x "$LIB/.venv/bin/python" ] && [ -z "${MVID_UV_SYNC:-}" ]; then
+    "$LIB/.venv/bin/python" "$@"
+  else
+    command -v uv >/dev/null 2>&1 || die "uv not found (https://docs.astral.sh/uv/)"
+    uv run --quiet --project "$LIB" python "$@"
+  fi
+}
+
+usage() { sed -n '2,15p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; }
+
+film_dir() {
+  [ -n "${1:-}" ] || die "<slug> is required"
+  local d="$FILMS/$1"
+  [ -f "$d/film.json" ] || die "no film '$1' (expected $d/film.json)"
+  echo "$d"
+}
+
+# ───────────────────────────── new ─────────────────────────────
+cmd_new() {
+  local slug="${1:-}" mode="explainer" title=""
+  [ -n "$slug" ] || die "usage: mvid new <slug> [--mode explainer|paper|demo|reel|loop] [--title \"...\"]"
+  shift
+  case "$slug" in *[!A-Za-z0-9._-]*|-*) die "slug may use letters, digits, '.', '_' and '-' only";; esac
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --mode)  mode="${2:-}"; shift 2;;
+      --title) title="${2:-}"; shift 2;;
+      *) die "unknown flag '$1'";;
+    esac
+  done
+  [ -n "$title" ] || title="$slug"
+  local w=1920 h=1080 fps=30 voice='"af_heart"' music="null"
+  case "$mode" in
+    explainer|paper|demo) ;;
+    reel) fps=60; voice="null"; music='"pad"';;
+    loop) w=1080; h=1080; fps=60; voice="null";;
+    *) die "unknown --mode '$mode' (explainer|paper|demo|reel|loop)";;
+  esac
+  [ -f "$KIT/templates/scene.html" ] || die "kit not found at $KIT"
+  local d="$FILMS/$slug"
+  [ ! -e "$d" ] || die "film '$slug' already exists at $d"
+  mkdir -p "$d/scenes" "$d/renders" || die "cannot create $d"
+  ln -s "$KIT" "$d/_kit" || die "kit link failed"   # one shared kit, never copied per film
+  # title goes through python so quotes in it cannot break the JSON
+  "$PY3" - "$d/film.json" "$slug" "$title" "$mode" "$w" "$h" "$fps" "$voice" "$music" <<'PY' || die "could not write film.json"
+import json, sys
+p, slug, title, mode, w, h, fps, voice, music = sys.argv[1:10]
+film = {"slug": slug, "title": title, "mode": mode, "width": int(w), "height": int(h), "fps": int(fps),
+        "voice": json.loads(voice), "speed": 1.0, "scenes": [], "transitions": [], "xfade": 0.4,
+        "music": json.loads(music), "music_volume": 0.16, "captions": False}
+open(p, "w").write(json.dumps(film, indent=2) + "\n")
+PY
+  printf '# %s: storyboard\n\n## Scenes\n\n## Gate 1\n' "$title" > "$d/STORYBOARD.md"
+  printf '# %s: facts\n\nEvery on-screen number and name, each dated with its source.\n\n## Facts\n' "$title" > "$d/KIT.md"
+  [ -f "$d/film.json" ] && [ -d "$d/_kit/templates" ] || die "new film incomplete"
+  echo "mvid: created $d ($mode)"
+}
+
+# ───────────────────────────── scene ─────────────────────────────
+cmd_scene() {
+  local slug="${1:-}"; shift || true
+  [ $# -gt 0 ] || die "usage: mvid scene <slug> <scene-id>..."
+  local d; d="$(film_dir "$slug")" || exit 1
+  "$PY3" "$LIB/render.py" --scaffold "$d" "$@" || die "scene: scaffold failed"
+  local s
+  for s in "$@"; do [ -f "$d/scenes/$s/index.html" ] || die "scene: $s/index.html missing after scaffold"; done
+}
+
+# ───────────────────────────── voice ─────────────────────────────
+cmd_voice() {
+  local slug="${1:-}" voice="" speed="" force="" scenes=()
+  shift || true
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --voice) voice="${2:-}"; shift 2;;
+      --speed) speed="${2:-}"; shift 2;;
+      --force) force="--force"; shift;;
+      -*) die "unknown flag '$1'";;
+      *) scenes+=("$1"); shift;;
+    esac
+  done
+  local d; d="$(film_dir "$slug")" || exit 1
+  if [ ${#scenes[@]} -eq 0 ]; then
+    while IFS= read -r s; do [ -n "$s" ] && scenes+=("$s"); done < <("$PY3" -c 'import json,sys; print("\n".join(json.load(open(sys.argv[1]))["scenes"]))' "$d/film.json")
+  fi
+  [ ${#scenes[@]} -gt 0 ] || die "voice: no scenes (run mvid scene first)"
+  local s fail=0 args
+  for s in "${scenes[@]}"; do
+    if [ ! -s "$d/scenes/$s/narration.txt" ]; then echo "  $s: no narration, skipped"; continue; fi
+    args=("$d/scenes/$s")
+    [ -n "$voice" ] && args+=(--voice "$voice")
+    [ -n "$speed" ] && args+=(--speed "$speed")
+    [ -n "$force" ] && args+=("$force")
+    echo "  $s: tts"
+    upy "$LIB/tts.py" "${args[@]}" || { echo "  $s: tts FAILED" >&2; fail=1; continue; }
+    [ -s "$d/scenes/$s/audio/cues.json" ] && [ -s "$d/scenes/$s/audio/narration.wav" ] \
+      || { echo "  $s: no audio/cues.json or narration.wav after tts" >&2; fail=1; }
+  done
+  "$PY3" "$LIB/render.py" --sync-durations "$d" "${scenes[@]}" || fail=1
+  [ "$fail" -eq 0 ] || die "voice: one or more scenes failed"
+}
+
+# ───────────────────────────── render ─────────────────────────────
+cmd_render() {
+  local slug="${1:-}" flags=() scenes=()
+  shift || true
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --draft|--no-check) flags+=("$1"); shift;;
+      --jobs|--expect) flags+=("$1" "${2:-}"); shift 2;;
+      -*) die "unknown flag '$1'";;
+      *) scenes+=("$1"); shift;;
+    esac
+  done
+  local d; d="$(film_dir "$slug")" || exit 1
+  "$PY3" "$LIB/render.py" "$d" ${scenes[@]+"${scenes[@]}"} ${flags[@]+"${flags[@]}"} || die "render: one or more scenes failed"
+}
+
+# ───────────────────────────── critic ─────────────────────────────
+cmd_critic() {
+  local slug="${1:-}"; shift || true
+  local d; d="$(film_dir "$slug")" || exit 1
+  upy "$LIB/critic.py" "$d" "$@"
+}
+
+# ───────────────────────────── assemble ─────────────────────────────
+cmd_assemble() {
+  local slug="${1:-}"; shift || true
+  local d; d="$(film_dir "$slug")" || exit 1
+  local out="" a=("$@") i
+  for ((i=0; i<${#a[@]}; i++)); do [ "${a[$i]}" = "--out" ] && out="${a[$((i+1))]:-}"; done
+  upy "$LIB/assemble.py" "$d" "$@" || die "assemble failed"
+  if [ -z "$out" ]; then
+    out="$(ls -t "$ROOT/out/$slug/$slug"-v[0-9]*.mp4 2>/dev/null | grep -Ev -- '-(captioned|square|vertical|x|linkedin)\.mp4$' | head -1)"
+  fi
+  [ -n "$out" ] && [ -s "$out" ] || die "assemble: no output found"
+  echo "cut: $out"
+}
+
+# ───────────────────────────── dispatch ─────────────────────────────
+[ -n "$PY3" ] || die "python3 not found"
+cmd="${1:-}"; shift || true
+case "$cmd" in
+  new)      cmd_new "$@";;
+  scene)    cmd_scene "$@";;
+  voice)    cmd_voice "$@";;
+  render)   cmd_render "$@";;
+  critic)   cmd_critic "$@";;
+  assemble) cmd_assemble "$@";;
+  -h|--help|help|"") usage;;
+  *) die "unknown command '$cmd' (have: new, scene, voice, render, critic, assemble)";;
+esac

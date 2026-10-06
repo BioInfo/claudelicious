@@ -1,0 +1,55 @@
+<!doctype html>
+<!--
+PATTERN 12 · Title / outro lockup (chars rise in; italic-serif emphasis word; tiny mono meta line)
+USE: the opening title (P.mode 'title') or the closing lockup ('outro'). Bookend rule: the outro echoes the
+     title's layout so the last frame rhymes with the first. No fade to black unless P.fadeOut is set.
+PARAMS (P): mode, title {before, em, sub, meta}, outro {before, em, sub, meta}, fadeOut. ?mode= overrides P.mode.
+CUES: in = MV.cue(1) (or 0.3), sub = MV.cue(1) + 1.1, meta = + 0.6.
+AVOID: glows, multi-stop gradients, a bouncy ease on the title.
+-->
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../theme.css">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script><script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/SplitText.min.js"></script><script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/CustomEase.min.js"></script>
+<script src="../harness.js"></script>
+<style>
+  .bg{position:absolute;inset:-80px;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+      background-size:80px 80px;opacity:.3;-webkit-mask-image:radial-gradient(circle at 50% 50%,#000 20%,transparent 70%)}
+  .c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:34px}
+  .t{font:900 150px/1 var(--font-display);letter-spacing:-.045em;max-width:1600px}
+  .t .em{color:var(--accent);font-size:1.08em;letter-spacing:-.01em;padding-left:.06em}
+  .s{font:400 44px/1.35 var(--font-body);color:var(--muted);max-width:1200px}
+  .m{font:500 24px/1 var(--font-mono);color:var(--muted);letter-spacing:.14em;text-transform:uppercase}
+  .black{position:absolute;inset:0;background:#000;opacity:0}
+</style></head>
+<body><div id="root" data-composition-id="title-outro-card" data-start="0" data-duration="5" data-width="1920" data-height="1080">
+  <div class="bg" id="bg"></div>
+  <div class="c"><div class="t" id="t"></div><div class="s" id="s"></div><div class="m" id="m"></div></div>
+  <div class="black" id="black"></div>
+</div>
+<script>
+window.__timelines = window.__timelines || {};
+const P = {
+  mode: 'title',
+  title: { before: 'The film', em: 'title', sub: 'One line on what it is about', meta: 'SERIES · EP 00' },   // DEMO VALUE
+  outro: { before: 'The closing', em: 'line', sub: 'Where to find more', meta: 'EXAMPLE.COM' },              // DEMO VALUE
+  fadeOut: false,
+};
+const MODE = new URLSearchParams(location.search).get('mode') || P.mode, C = P[MODE];
+gsap.registerPlugin(SplitText, CustomEase);
+CustomEase.create('settle', 'M0,0 C0.16,0.84 0.3,1 1,1');
+document.getElementById('t').innerHTML = `${C.before} <span class="em">${C.em}</span>`;
+document.getElementById('s').textContent = C.sub;
+document.getElementById('m').textContent = C.meta;
+gsap.set(['#t', '#s', '#m', '#bg'], {opacity:0});
+MV.scene((tl, MV) => {
+  const tin = MV.cue(1, MODE === 'title' ? 0.3 : 0.2), sub = tin + 1.1, meta = sub + .6;
+  gsap.set('#t', {opacity:1});
+  const split = SplitText.create('#t', { type: 'chars,words' });
+  tl.fromTo('#bg', {scale:1.08, opacity:0}, {scale:1, opacity:.3, duration:2.4, ease:'settle'}, 0)
+    .fromTo(split.chars, {opacity:0, yPercent:60}, {opacity:1, yPercent:0, duration:.7, ease:'settle', stagger:.025}, tin)
+    .fromTo('#s', {opacity:0, y:18}, {opacity:1, y:0, duration:.6, ease:'power2.out'}, sub)
+    .fromTo('#m', {opacity:0, letterSpacing:'0.3em'}, {opacity:1, letterSpacing:'0.14em', duration:.8, ease:'power2.out'}, meta);
+  if (P.fadeOut) tl.fromTo('#black', {opacity:0}, {opacity:1, duration:.7, ease:'power1.in', immediateRender:false}, MV.duration() - .8);
+});
+</script></body></html>

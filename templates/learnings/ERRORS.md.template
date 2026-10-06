@@ -1,0 +1,15 @@
+# ERRORS
+
+<!--
+The terminal case for `environment` failures: the skill and trigger were correct
+and the failure was external (an API outage, a missing dependency, stale state).
+These get logged HERE and the environment gets fixed — they do NOT become a skill
+edit. Logging an external failure as a skill learning makes a later pass "fix" a
+skill that was never broken. Stop here for that one. See docs/05.
+-->
+
+## [ERR-YYYYMMDD-NNN] <one-line: what failed externally>
+- **What happened:** <the external failure>
+- **Skill/agent involved:** <which one ran — confirmed NOT at fault>
+- **Environment fix:** <what was actually wrong outside the harness, and what fixed it>
+- **Date:** YYYY-MM-DD

@@ -1,0 +1,55 @@
+<!doctype html>
+<!--
+PATTERN 09 · Quote card (serif quote, line-mask reveal, accent highlighter sweep, attribution last)
+USE: a verbatim quote from a paper, a person or a doc. The quote is set in the italic serif.
+PARAMS (P): before / mark / after (the quote split around the highlighted phrase), author, source, lineGap.
+CUES: card = MV.cue(1) - 0.4, lines = MV.cue(1), mark = MV.wordOf(1, first word of P.mark), attrib = MV.cueEnd(1).
+AVOID: paraphrase in quote marks; a quote without a source.
+-->
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../theme.css">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script><script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/SplitText.min.js"></script>
+<script src="../harness.js"></script>
+<style>
+  .qcard{position:absolute;left:260px;right:260px;top:210px;padding:90px 110px 80px}
+  .qm{position:absolute;left:54px;top:-30px;font:400 280px/1 var(--font-serif);color:var(--accent)}
+  blockquote{font:italic 400 78px/1.2 var(--font-serif);letter-spacing:-.01em}
+  .mark{background:linear-gradient(transparent 58%, color-mix(in srgb, var(--accent) 38%, transparent) 58%);background-size:0% 100%;background-repeat:no-repeat}
+  .att{margin-top:48px;display:flex;gap:18px;align-items:center;font:500 26px/1.2 var(--font-mono);letter-spacing:.06em;color:var(--muted)}
+  .att b{color:var(--ink);font-weight:600}
+  .att .line{width:60px;height:3px;background:var(--accent)}
+</style></head>
+<body><div id="root" data-composition-id="quote-card" data-start="0" data-duration="7" data-width="1920" data-height="1080">
+  <div class="card qcard" id="card"><div class="qm" id="qm">&ldquo;</div>
+    <blockquote id="quote"></blockquote>
+    <div class="att" id="att"><div class="line"></div><b id="author"></b><span id="source"></span></div>
+  </div>
+</div>
+<script>
+window.__timelines = window.__timelines || {};
+const P = {
+  before: 'A quoted sentence goes here,',     // DEMO VALUE
+  mark: 'and this part is the point.',        // DEMO VALUE (highlighted)
+  after: '',                                  // DEMO VALUE
+  author: 'Author Name',                      // DEMO VALUE
+  source: '· Source, year',                   // DEMO VALUE
+  lineGap: 0.35,
+};
+document.getElementById('quote').innerHTML = `${P.before} <span class="mark">${P.mark}</span> ${P.after}`;
+document.getElementById('author').textContent = P.author;
+document.getElementById('source').textContent = P.source;
+gsap.registerPlugin(SplitText);
+gsap.set(['#card', '#qm', '#att'], {opacity:0});
+MV.scene((tl, MV) => {
+  const lines = MV.cue(1, 0.6), card = Math.max(0, lines - .4);
+  const mark = MV.wordOf(1, P.mark.split(' ')[0].toLowerCase().replace(/[^\w%$.-]/g, ''), lines + 1.8);
+  const attrib = MV.cueEnd(1, mark + 1.4);
+  const split = SplitText.create('#quote', { type: 'lines', mask: 'lines' });
+  tl.fromTo('#card', {opacity:0, y:30, scale:.98}, {opacity:1, y:0, scale:1, duration:.6, ease:'power3.out'}, card)
+    .fromTo('#qm', {opacity:0, y:-30}, {opacity:1, y:0, duration:.6, ease:'power3.out'}, card + .2)
+    .fromTo(split.lines, {yPercent:110}, {yPercent:0, duration:.7, ease:'power3.out', stagger:P.lineGap}, lines)
+    .fromTo('#quote .mark', {backgroundSize:'0% 100%'}, {backgroundSize:'100% 100%', duration:.9, ease:'power2.inOut'}, mark)
+    .fromTo('#att', {opacity:0, x:-16}, {opacity:1, x:0, duration:.5, ease:'power2.out'}, attrib);
+});
+</script></body></html>

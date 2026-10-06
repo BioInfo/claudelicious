@@ -1,0 +1,59 @@
+<!doctype html>
+<!--
+PATTERN 02 · Number counter (hero stat + mono unit + dated source stamp)
+USE: any real metric the narration states. The number is the hero; the unit is a small mono label.
+PARAMS (P): label, from, to, decimals, prefix, suffix, unit, countDur, asOf, source. Values come from KIT.md.
+CUES: label = MV.cue(1), count = MV.wordOf(1, P.countWord) or MV.cue(1)+0.4, stamp = MV.cueEnd(1).
+AVOID: an undated number; counting a value the narration never says.
+-->
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../theme.css">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+<script src="../harness.js"></script>
+<style>
+  .center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px}
+  .num{font:900 260px/1 var(--font-display);letter-spacing:-.045em;font-variant-numeric:tabular-nums;min-width:1400px;text-align:center}
+  .unit{font:600 34px/1 var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+  .label{font:500 44px/1.2 var(--font-body);color:var(--muted)}
+  .stamp{font:500 24px/1 var(--font-mono);color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:14px 26px}
+  .stamp b{color:var(--ink);font-weight:600}
+</style></head>
+<body><div id="root" data-composition-id="number-counter" data-start="0" data-duration="5" data-width="1920" data-height="1080">
+  <div class="center">
+    <div class="label" id="label"></div>
+    <div class="num" id="num">0</div>
+    <div class="unit" id="unit"></div>
+    <div class="stamp" id="stamp">as of <b id="asof"></b> · source: <span id="src"></span></div>
+  </div>
+</div>
+<script>
+window.__timelines = window.__timelines || {};
+const P = {
+  label: 'Things counted this week',   // DEMO VALUE
+  from: 0, to: 12345,                  // DEMO VALUE
+  decimals: 0, prefix: '', suffix: '',
+  unit: 'units',                       // DEMO VALUE
+  countDur: 2.0,
+  asOf: 'YYYY-MM-DD',                  // DEMO VALUE
+  source: 'source name',               // DEMO VALUE
+  countWord: null,                     // narration word that triggers the count, e.g. '12,345'
+};
+const fmt = v => P.prefix + v.toLocaleString('en-US', {minimumFractionDigits:P.decimals, maximumFractionDigits:P.decimals}) + P.suffix;
+document.getElementById('label').textContent = P.label;
+document.getElementById('unit').textContent = P.unit;
+document.getElementById('asof').textContent = P.asOf;
+document.getElementById('src').textContent = P.source;
+gsap.set(['#label', '#num', '#unit', '#stamp'], {opacity:0});
+MV.scene((tl, MV) => {
+  const label = MV.cue(1, 0.2);
+  const count = P.countWord ? MV.wordOf(1, P.countWord, label + .4) : label + .4;
+  const stamp = MV.cueEnd(1, count + P.countDur + .2);
+  const el = document.getElementById('num'), o = {v:P.from};
+  tl.fromTo('#label', {opacity:0, y:16}, {opacity:1, y:0, duration:.4, ease:'power2.out'}, label)
+    .fromTo('#num', {opacity:0, scale:.94}, {opacity:1, scale:1, duration:.5, ease:'power3.out'}, count)
+    .fromTo(o, {v:P.from}, {v:P.to, duration:P.countDur, ease:'expo.out', onUpdate:() => { el.textContent = fmt(o.v); }}, count)
+    .fromTo('#unit', {opacity:0, y:10}, {opacity:1, y:0, duration:.4, ease:'power2.out'}, count + .3)
+    .fromTo('#stamp', {opacity:0, y:10}, {opacity:1, y:0, duration:.4, ease:'power2.out'}, stamp);
+});
+</script></body></html>

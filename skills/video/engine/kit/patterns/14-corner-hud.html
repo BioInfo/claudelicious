@@ -1,0 +1,50 @@
+<!doctype html>
+<!--
+PATTERN 14 · Corner HUD (chapter index "01 / NAME", mono timecode, thin progress bar, crop marks)
+USE: persistent frame furniture across a whole film. templates/scene.html already carries the static HUD;
+     this pattern shows the animated version: the chapter index rolls to the next chapter on a cue, and the
+     timecode + bar are pure functions of timeline time (MV.hud), so any seek lands on the same pixels.
+PARAMS (P): chapters [{n, name}], brand, spec, offset (seconds of film before this scene), total (film length).
+CUES: chapter change = MV.cue(2).
+AVOID: HUD text above 26px or in the accent colour (it is furniture, not content); anything below y=993.
+-->
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../theme.css">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+<script src="../harness.js"></script>
+<style>
+  .chap{display:inline-block;height:22px;overflow:hidden;vertical-align:top}
+  .chap .roll{display:block}
+  .chap .roll span{display:block;height:22px}
+  .under{position:absolute;left:var(--pad);top:420px;color:var(--dim)}
+</style></head>
+<body><div id="root" data-composition-id="corner-hud" data-start="0" data-duration="6" data-width="1920" data-height="1080">
+  <div class="under h1">(any scene underneath)</div>
+  <div class="hud" id="hud">
+    <i class="hud-crop tl"></i><i class="hud-crop tr"></i><i class="hud-crop bl"></i><i class="hud-crop br"></i>
+    <div class="hud-label hud-tl"><span class="chap"><span class="roll" id="roll"></span></span></div>
+    <div class="hud-label hud-tr" id="brand"></div>
+    <div class="hud-label hud-bl" id="hudTc">00:00:00</div>
+    <div class="hud-label hud-br" id="spec"></div>
+    <div class="hud-bar" id="hudBar"><i></i></div>
+  </div>
+</div>
+<script>
+window.__timelines = window.__timelines || {};
+const P = {
+  chapters: [ {n:'01', name:'Opening'}, {n:'02', name:'The problem'} ],   // DEMO VALUE
+  brand: 'FILM TITLE', spec: '1920×1080 · 30FPS',
+  offset: 0, total: null,          // total: whole-film seconds so the bar spans the film, null = this scene
+};
+document.getElementById('roll').innerHTML = P.chapters.map(c => `<span><b>${c.n}</b> / ${c.name.toUpperCase()}</span>`).join('');
+document.getElementById('brand').textContent = P.brand;
+document.getElementById('spec').textContent = P.spec;
+gsap.set('#hud', {opacity:0});
+MV.scene((tl, MV) => {
+  MV.hud(tl, {offset:P.offset, total:P.total || undefined});
+  tl.fromTo('#hud', {opacity:0}, {opacity:1, duration:.5, ease:'power2.out'}, 0);
+  for (let i = 1; i < P.chapters.length; i++)   // slot roll: one line height per chapter
+    tl.fromTo('#roll', {y:-(i - 1) * 22}, {y:-i * 22, duration:.45, ease:'power3.inOut', immediateRender:false}, MV.cue(i + 1, 3.0));
+});
+</script></body></html>

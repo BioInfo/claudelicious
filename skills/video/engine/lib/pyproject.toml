@@ -1,0 +1,31 @@
+[project]
+name = "mvid-lib"
+version = "0.1.0"
+description = "mvid engine: narration (Kokoro), assembly, critic"
+requires-python = ">=3.11,<3.13"
+dependencies = [
+  "kokoro>=0.9.4",
+  "soundfile",
+  "numpy",
+  "misaki[en]",
+  "num2words>=0.5.14",
+  "en-core-web-sm",
+]
+
+[project.optional-dependencies]
+# local transcription/alignment for `mvid critic` (WER) and `mvid assemble --captions`
+asr = ["stable-ts"]
+
+[dependency-groups]
+dev = ["pytest"]
+
+[tool.uv]
+package = false
+# without a floor the universal resolve backtracks to an old transformers whose tokenizers will not build
+constraint-dependencies = ["transformers>=4.50"]
+
+[tool.uv.sources]
+en-core-web-sm = { url = "https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl" }
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

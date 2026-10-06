@@ -1,0 +1,63 @@
+<!doctype html>
+<!--
+PATTERN 03 · Bar reveal (2-6 quantities, winner takes the accent)
+USE: comparing a handful of values the narration walks through. Bars grow from 0, labels count,
+     the winning bar alone turns accent when the narrator names it.
+PARAMS (P): eyebrow, title, rows [{label,value,unit}], barGap, source. Values come from KIT.md.
+CUES: bars = MV.cue(1), winner = MV.cue(2) (the line that names the answer).
+AVOID: more than 6 bars; a bar with no cited value.
+-->
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../theme.css">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+<script src="../harness.js"></script>
+<style>
+  .wrap{position:absolute;left:var(--pad);right:var(--pad);top:200px}
+  .rows{margin-top:70px;display:flex;flex-direction:column;gap:44px}
+  .row{display:grid;grid-template-columns:360px 1fr 200px;align-items:center;gap:32px}
+  .lab{font:600 40px/1.1 var(--font-body)}
+  .track{height:64px;background:var(--panel);border-radius:12px;overflow:hidden}
+  .bar{height:100%;background:var(--dim);border-radius:12px;transform-origin:left center}
+  .val{font:700 52px/1 var(--font-mono);font-variant-numeric:tabular-nums;text-align:right}
+  .src{position:absolute;left:var(--pad);bottom:150px;font:400 24px/1 var(--font-mono);color:var(--muted)}
+</style></head>
+<body><div id="root" data-composition-id="bar-reveal" data-start="0" data-duration="5" data-width="1920" data-height="1080">
+  <div class="wrap"><div class="eyebrow" id="eyebrow"></div><div class="h2" id="title" style="margin-top:24px"></div>
+    <div class="rows" id="rows"></div></div>
+  <div class="src" id="src"></div>
+</div>
+<script>
+window.__timelines = window.__timelines || {};
+const P = {
+  eyebrow: 'Comparison',                 // DEMO VALUE
+  title: 'Option A against B and C',     // DEMO VALUE
+  rows: [ {label:'Option A', value:30, unit:'%'},     // DEMO VALUE
+          {label:'Option B', value:55, unit:'%'},     // DEMO VALUE
+          {label:'Option C', value:80, unit:'%'} ],   // DEMO VALUE
+  barGap: 0.25,
+  source: 'source · YYYY-MM-DD',         // DEMO VALUE
+};
+const MAX = Math.max(...P.rows.map(d => d.value));
+const win = P.rows.reduce((a, d, i) => d.value > P.rows[a].value ? i : a, 0);
+document.getElementById('eyebrow').textContent = P.eyebrow;
+document.getElementById('title').textContent = P.title;
+document.getElementById('src').textContent = P.source;
+const rows = document.getElementById('rows');
+P.rows.forEach(d => rows.insertAdjacentHTML('beforeend',
+  `<div class="row"><div class="lab">${d.label}</div><div class="track"><div class="bar"></div></div><div class="val">0${d.unit}</div></div>`));
+gsap.set([...rows.children], {opacity:0});
+MV.scene((tl, MV) => {
+  const bars = MV.cue(1, 0.6), winner = MV.cue(2, 2.6);
+  [...rows.children].forEach((row, i) => {
+    const d = P.rows[i], at = bars + i * P.barGap, o = {v:0}, val = row.querySelector('.val');
+    tl.fromTo(row, {opacity:0, x:-20}, {opacity:1, x:0, duration:.35, ease:'power2.out'}, Math.max(0, at - .15))
+      .fromTo(row.querySelector('.bar'), {scaleX:0}, {scaleX:d.value / MAX, duration:1.1, ease:'power3.out'}, at)
+      .fromTo(o, {v:0}, {v:d.value, duration:1.1, ease:'power3.out', onUpdate:() => { val.textContent = Math.round(o.v) + d.unit; }}, at);
+  });
+  const w = rows.children[win];
+  // colours tween with fromTo, never tl.call(classList.add): a class toggle is not undone by a backward seek
+  tl.fromTo(w.querySelector('.bar'), {backgroundColor:MV.tok('dim')}, {backgroundColor:MV.tok('accent'), duration:.4}, winner)
+    .fromTo(w.querySelector('.val'), {color:MV.tok('ink')}, {color:MV.tok('accent'), duration:.4}, winner);
+});
+</script></body></html>

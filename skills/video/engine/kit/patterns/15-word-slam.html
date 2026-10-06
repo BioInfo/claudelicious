@@ -1,0 +1,65 @@
+<!doctype html>
+<!--
+PATTERN 15 · Word slam + slot-machine swap
+USE: showreel/launch beats. A fixed lead-in ("Built for") and a slot window whose word rolls to the next
+     one on each beat; the final word lands in the italic serif + accent. Optional SLAM mode: each word
+     hits the frame alone at full width (1-3 words on screen), scale-down + blur-in, one per beat.
+PARAMS (P): mode ("slot" | "slam", or ?mode=), lead, words [], roll, fallback. No randomness.
+CUES: word i = MV.cue(i + 1) or MV.word(line, n) to hit an exact spoken word.
+AVOID: more than ~6 words per slot run; slamming words the narrator does not say (reel mode excepted).
+-->
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../theme.css">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+<script src="../harness.js"></script>
+<style>
+  .slot-line{position:absolute;left:0;right:0;top:430px;display:flex;justify-content:center;align-items:baseline;gap:.28em;white-space:nowrap}
+  .slot-line .lead{color:var(--muted)}
+  .win{display:inline-block;height:1.02em;overflow:hidden;vertical-align:bottom;text-align:left}
+  .reel{display:block}
+  .reel span{display:block;height:1.02em;line-height:1.02}
+  .reel span.last{font-family:var(--font-serif);font-style:italic;font-weight:400;color:var(--accent);letter-spacing:-.01em}
+  .slam-wrap{position:absolute;inset:0;display:grid;place-items:center}
+  .slam-wrap .w{grid-area:1/1;text-transform:uppercase}
+  .slam-wrap .w.last{font-family:var(--font-serif);font-style:italic;font-weight:400;text-transform:none;color:var(--accent)}
+</style></head>
+<body><div id="root" data-composition-id="word-slam" data-start="0" data-duration="6" data-width="1920" data-height="1080">
+  <div class="slot-line h1" id="slot"><span class="lead" id="lead"></span><span class="win" id="win"><span class="reel" id="reel"></span></span></div>
+  <div class="slam-wrap slam" id="slam"></div>
+</div>
+<script>
+window.__timelines = window.__timelines || {};
+const P = {
+  mode: new URLSearchParams(location.search).get('mode') || 'slot',
+  lead: 'Built for',                                    // DEMO VALUE
+  words: ['speed', 'scale', 'teams', 'you'],            // DEMO VALUE (last word = the payoff)
+  fallback: [0.3, 1.5, 2.7, 3.9],
+  roll: 0.45, ease: 'power4.inOut',
+};
+const last = P.words.length - 1;
+document.getElementById('lead').textContent = P.lead;
+document.getElementById('reel').innerHTML = P.words.map((w, i) => `<span class="${i === last ? 'last' : ''}">${w}</span>`).join('');
+document.getElementById('slam').innerHTML = P.words.map((w, i) => `<span class="w ${i === last ? 'last' : ''}">${w}</span>`).join('');
+document.getElementById(P.mode === 'slot' ? 'slam' : 'slot').style.display = 'none';
+gsap.set(['#slot', '.slam-wrap .w'], {opacity:0});
+MV.scene((tl, MV) => {
+  const at = P.words.map((_, i) => MV.cue(i + 1, P.fallback[i]));
+  if (P.mode === 'slot') {
+    const win = document.getElementById('win'), spans = [...document.querySelectorAll('#reel span')];
+    const h = spans[0].getBoundingClientRect().height, widths = spans.map(s => { s.style.display = 'inline-block'; const w = s.getBoundingClientRect().width; s.style.display = ''; return w; });
+    gsap.set(win, {width:widths[0]});
+    tl.fromTo('#slot', {opacity:0, y:30}, {opacity:1, y:0, duration:.5, ease:'power3.out'}, at[0]);
+    for (let i = 1; i < P.words.length; i++) {   // roll one word height, the window resizes to the new word
+      tl.fromTo('#reel', {y:-(i - 1) * h}, {y:-i * h, duration:P.roll, ease:P.ease, immediateRender:false}, at[i])
+        .fromTo(win, {width:widths[i - 1]}, {width:widths[i], duration:P.roll, ease:P.ease, immediateRender:false}, at[i]);
+    }
+  } else {
+    const ws = [...document.querySelectorAll('.slam-wrap .w')];
+    ws.forEach((w, i) => {
+      tl.fromTo(w, {opacity:0, scale:1.6, filter:'blur(8px)'}, {opacity:1, scale:1, filter:'blur(0px)', duration:.28, ease:'power4.out', immediateRender:false}, at[i]);
+      if (i < last) tl.fromTo(w, {opacity:1}, {opacity:0, duration:.08, immediateRender:false}, at[i + 1]);
+    });
+  }
+});
+</script></body></html>

@@ -1,0 +1,71 @@
+/* mvid kit tokens: palette, type scale, spacing, HUD and section-label styles.
+   Change the LOOK in theme.css (loaded after this file), not here and not in scenes.
+   Fonts: none are vendored. The stacks below end in generic families, which the renderer resolves to
+   whatever the machine has. For a deterministic face, add woff2 files under kit/fonts/ and declare them
+   with @font-face in theme.css (never @import or a web-font CDN; see the README). */
+
+:root{
+  /* palette: neutral ground + ONE accent. Dark is the default. */
+  --bg:#0f0f10; --panel:#18181b; --panel-2:#222226; --line:#2e2e33;
+  --ink:#f2efe8; --muted:#9a968d; --dim:#5c5a55;
+  --accent:#ff6a3d;          /* the answer / new value / keyword, nothing else */
+  --accent-ink:#0f0f10;      /* text on an accent fill */
+  --accent-2:#3d6bff;        /* optional contrast accent, use sparingly */
+  --good:#4fbf7f; --bad:#e5484d;
+  --accent-deep:var(--accent); /* accent for SMALL text on this ground (AA 4.5:1) */
+  --ink-2:var(--muted);        /* secondary ink */
+
+  /* type */
+  --font-display:sans-serif;
+  --font-body:sans-serif;
+  --font-serif:serif;
+  --font-mono:monospace;
+  --fs-slam:220px; --fs-h1:120px; --fs-h2:72px; --fs-h3:48px; --fs-body:40px; --fs-small:28px; --fs-hud:22px;
+
+  /* space (1080p) */
+  --pad:120px; --gap-1:12px; --gap-2:24px; --gap-3:48px; --gap-4:96px; --radius:18px;
+  --safe-bottom:87px;        /* keep anything essential above y=993 */
+}
+/* light "cream" variant: <div id="root" class="cream"> */
+.cream{
+  --bg:#ece9e0; --panel:#e2ded3; --panel-2:#d8d3c6; --line:#c4bfb2;
+  --ink:#141414; --muted:#5f5b53; --dim:#9a958a;
+  --accent:#e8502a; --accent-ink:#ece9e0; --accent-2:#2447d6;
+  --accent-deep:#a8360f; --ink-2:#3f3c35;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1920px;height:1080px;background:var(--bg);overflow:hidden}
+body{color:var(--ink);font-family:var(--font-body);-webkit-font-smoothing:antialiased;text-rendering:geometricPrecision}
+#root,.stage{position:relative;width:1920px;height:1080px;overflow:hidden;background:var(--bg);color:var(--ink)}
+
+/* type scale */
+.slam{font:900 var(--fs-slam)/.9 var(--font-display);letter-spacing:-.045em}
+.h1{font:800 var(--fs-h1)/1.02 var(--font-display);letter-spacing:-.035em}
+.h2{font:700 var(--fs-h2)/1.08 var(--font-display);letter-spacing:-.02em}
+.h3{font:600 var(--fs-h3)/1.15 var(--font-display);letter-spacing:-.01em}
+.body{font:400 var(--fs-body)/1.4 var(--font-body);color:var(--muted)}
+.em{font-family:var(--font-serif);font-style:italic;font-weight:400;letter-spacing:-.01em}  /* the emphasis word */
+.eyebrow{font:600 var(--fs-small)/1 var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+.mono{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+.accent{color:var(--accent)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius)}
+
+/* corner HUD: tiny mono labels in the corners, thin progress bar, crop marks */
+.hud{position:absolute;inset:0;pointer-events:none;z-index:50}
+.hud-label{position:absolute;font:500 var(--fs-hud)/1 var(--font-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.hud-tl{left:56px;top:48px}.hud-tr{right:56px;top:48px}.hud-bl{left:56px;bottom:100px}.hud-br{right:56px;bottom:100px}
+.hud-label b{color:var(--ink);font-weight:600}
+.hud-bar{position:absolute;left:56px;right:56px;bottom:91px;height:3px;background:var(--line)}
+.hud-bar i{position:absolute;inset:0;background:var(--accent);transform-origin:left;transform:scaleX(0)}
+.hud-crop{position:absolute;width:28px;height:28px;border-color:var(--dim);border-style:solid;border-width:0}
+.hud-crop.tl{left:24px;top:24px;border-left-width:2px;border-top-width:2px}
+.hud-crop.tr{right:24px;top:24px;border-right-width:2px;border-top-width:2px}
+.hud-crop.bl{left:24px;bottom:72px;border-left-width:2px;border-bottom-width:2px}
+.hud-crop.br{right:24px;bottom:72px;border-right-width:2px;border-bottom-width:2px}
+
+/* section label, lower right (above the safe line) */
+.section-label{position:absolute;right:120px;bottom:136px;display:flex;align-items:center;gap:16px;
+  font:600 var(--fs-small)/1 var(--font-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink);z-index:40}
+.section-label .idx{color:var(--accent)}
+.section-label .bar{width:4px;height:36px;background:var(--accent)}

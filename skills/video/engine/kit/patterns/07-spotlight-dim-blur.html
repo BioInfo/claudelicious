@@ -1,0 +1,58 @@
+<!doctype html>
+<!--
+PATTERN 07 · Spotlight (others dim + blur, the focused item lifts and takes the accent border)
+USE: same job as 06 without moving the camera; better when the whole grid must stay legible as context.
+PARAMS (P): eyebrow, title, items [[h,p]], steps [{line, target(index|null), at}], dim, blur (<=8px), lift.
+CUES: each step at MV.cue(step.line); target null = release all.
+AVOID: blur radius over 8px (render cost); spotlighting more than one item at a time.
+-->
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../theme.css">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+<script src="../harness.js"></script>
+<style>
+  .grid{position:absolute;left:var(--pad);right:var(--pad);top:260px;display:grid;grid-template-columns:repeat(3,1fr);gap:36px}
+  .item{padding:44px 40px;height:300px}
+  .item h3{font:700 46px/1.1 var(--font-display);margin-bottom:16px}
+  .item p{font:400 28px/1.4 var(--font-body);color:var(--muted)}
+  .title{position:absolute;left:var(--pad);top:110px}
+</style></head>
+<body><div id="root" data-composition-id="spotlight-dim-blur" data-start="0" data-duration="8" data-width="1920" data-height="1080">
+  <div class="title"><div class="eyebrow" id="eyebrow"></div><div class="h2" id="title" style="margin-top:20px"></div></div>
+  <div class="grid" id="grid"></div>
+</div>
+<script>
+window.__timelines = window.__timelines || {};
+const P = {
+  eyebrow: 'Six items',                          // DEMO VALUE
+  title: 'One of these matters most',            // DEMO VALUE
+  items: [ ['Item one', 'Short supporting line.'], ['Item two', 'Short supporting line.'],        // DEMO VALUE
+           ['Item three', 'Short supporting line.'], ['Item four', 'Short supporting line.'],    // DEMO VALUE
+           ['Item five', 'Short supporting line.'], ['Item six', 'Short supporting line.'] ],    // DEMO VALUE
+  steps: [ {line:2, target:0, at:1.8}, {line:3, target:3, at:3.4}, {line:4, target:4, at:5.0}, {line:5, target:null, at:6.6} ],
+  dim: 0.25, blur: 6, lift: 1.03, dur: 0.5, ease: 'power2.inOut',
+};
+document.getElementById('eyebrow').textContent = P.eyebrow;
+document.getElementById('title').textContent = P.title;
+P.items.forEach(([h, p]) => document.getElementById('grid').insertAdjacentHTML('beforeend', `<div class="card item"><h3>${h}</h3><p>${p}</p></div>`));
+const items = [...document.querySelectorAll('.item')];
+gsap.set(['.title', ...items], {opacity:0});
+MV.scene((tl, MV) => {
+  const line = MV.tok('line'), accent = MV.tok('accent');
+  const look = (i, t) => t === null ? {opacity:1, filter:'blur(0px)', scale:1, borderColor:line}
+    : i === t ? {opacity:1, filter:'blur(0px)', scale:P.lift, borderColor:accent}
+              : {opacity:P.dim, filter:`blur(${P.blur}px)`, scale:.98, borderColor:line};
+  const build = MV.cue(1, 0.2), steps = P.steps.map(s => ({...s, at: MV.cue(s.line, s.at)}));
+  tl.fromTo('.title', {opacity:0, y:14}, {opacity:1, y:0, duration:.4}, Math.max(0, build - .15))
+    .fromTo(items, {opacity:0, y:24}, {opacity:1, y:0, duration:.45, ease:'power2.out', stagger:.1}, build);
+  let prev = null;
+  steps.forEach(s => {
+    items.forEach((el, i) => tl.fromTo(el, look(i, prev), {...look(i, s.target), duration:P.dur, ease:P.ease, immediateRender:false}, s.at));
+    prev = s.target;
+  });
+  const first = steps[0].at, release = steps.find(s => s.target === null);
+  tl.fromTo('.title', {opacity:1}, {opacity:P.dim, duration:P.dur, immediateRender:false}, first);
+  if (release) tl.fromTo('.title', {opacity:P.dim}, {opacity:1, duration:P.dur, immediateRender:false}, release.at);
+});
+</script></body></html>

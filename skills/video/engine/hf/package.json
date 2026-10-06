@@ -1,0 +1,10 @@
+{
+  "name": "mvid-renderer",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Pinned HyperFrames renderer for mvid",
+  "dependencies": {
+    "hyperframes": "0.8.62",
+    "puppeteer-core": "^25.10.0"
+  }
+}

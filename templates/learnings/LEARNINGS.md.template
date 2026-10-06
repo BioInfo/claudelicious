@@ -1,0 +1,25 @@
+# LEARNINGS
+
+<!--
+The work-order log. Memory captures the note ("don't repeat this"); this log
+names the PROMOTION TARGET — the exact file to edit so the cause cannot recur.
+The two fields that do the work are Cause (which roots the fix) and Promotion
+target (which file + what to change). See docs/05.
+
+Attribution: classify every failure into exactly ONE cause before touching a file.
+  skill-body      — right skill fired, its instructions were wrong/stale  → edit the SKILL.md body
+  skill-trigger   — wrong skill fired, or the right one stayed silent      → edit the description: triggers
+  skill-permission— wrong tool access (too broad or missing)               → edit allowed-tools / model frontmatter
+  environment     — skill+trigger were fine, failure was external          → NOWHERE in the skill; log to ERRORS.md
+-->
+
+## [LRN-YYYYMMDD-NNN] <type> | <one-line rule>
+- **Status:** pending | promoted | resolved
+- **Cause:** skill-body | skill-trigger | skill-permission | environment
+- **Summary:** <what happened and the durable rule it produces>
+- **Promotion target:** <exact file + what to change>   (or `DONE: <the edit made>`)
+- **Related:** <source memory file, e.g. feedback-some-lesson.md>
+
+<!-- Newest entries at the top. Before promoting any edit, grep REJECTED.md for
+     the target + topic — don't re-propose a vetoed dead end. Promote by delta
+     edit (append a bullet / fix the one line), never by regenerating a section. -->

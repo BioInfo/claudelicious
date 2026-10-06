@@ -1,0 +1,20 @@
+# Handoff — <from-lane> to <to-lane>
+
+<!-- One markdown note per handoff, dropped in the receiving lane's inbox. The receiving lane reads it
+     on its next tick. Lanes coordinate through files, not live messages, so a handoff waits patiently
+     and survives a restart. Reasoning: docs/21-lanes-and-the-cockpit.md. -->
+
+- **Date:** <YYYY-MM-DD>
+- **From:** <lane that produced this>
+- **To:** <lane that should act on it>
+- **Status:** open   <!-- open | done | dropped -->
+
+## What I need
+<!-- One or two sentences. The ask, not the story. -->
+
+## Context
+<!-- Only what the receiving lane needs to act. Link to the artifact, do not paste it. -->
+→ <path/to/thing.md>
+
+## Done when
+<!-- The concrete signal that closes this handoff, so the receiving lane knows when it is finished. -->

@@ -1,0 +1,52 @@
+<!doctype html>
+<!--
+PATTERN 01 · Kinetic headline (word-by-word, serif-italic emphasis word)
+USE: the opening claim of a scene, or any line the narrator says verbatim. Words land at speech pace;
+     the one emphasis word is set in the italic serif and turns accent when it is spoken.
+PARAMS (P): eyebrow, before / em / after (the headline split around the emphasis word), wordGap.
+CUES: line = MV.cue(1) (reveal start), accent = MV.wordOf(1, P.em) (the emphasis word is spoken).
+AVOID: revealing faster than it is spoken; more than one emphasis word per line.
+IN A SCENE: paths become _kit/... ; keep the HUD + section label from templates/scene.html.
+-->
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../theme.css">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script><script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/SplitText.min.js"></script>
+<script src="../harness.js"></script>
+<style>
+  .wrap{position:absolute;left:var(--pad);right:var(--pad);top:340px}
+  .key{display:inline-block}
+  .rule{height:6px;width:220px;background:var(--accent);margin-top:48px;transform-origin:left}
+</style></head>
+<body><div id="root" data-composition-id="kinetic-headline" data-start="0" data-duration="5" data-width="1920" data-height="1080">
+  <div class="wrap">
+    <div class="eyebrow" id="eyebrow"></div>
+    <h1 class="h1" id="headline" style="margin-top:36px"></h1>
+    <div class="rule" id="rule"></div>
+  </div>
+</div>
+<script>
+window.__timelines = window.__timelines || {};
+const P = {
+  eyebrow: 'Chapter one',                 // DEMO VALUE
+  before: 'The first line says',          // DEMO VALUE
+  em: 'exactly',                          // DEMO VALUE (the emphasis word)
+  after: 'what it means.',                // DEMO VALUE
+  wordGap: 0.16,                          // s between words, 0.12-0.2 ~ narration pace
+};
+document.getElementById('eyebrow').textContent = P.eyebrow;
+document.getElementById('headline').innerHTML = `${P.before} <span class="em key">${P.em}</span> ${P.after}`;
+gsap.registerPlugin(SplitText);
+gsap.set(['#eyebrow', '#headline'], {opacity:0}); gsap.set('#rule', {scaleX:0});
+MV.scene((tl, MV) => {
+  const line = MV.cue(1, 0.5), accent = MV.wordOf(1, P.em, 2.2);
+  gsap.set('#headline', {opacity:1});
+  const split = SplitText.create('#headline', { type: 'words', wordsClass: 'w' });
+  tl.fromTo('#eyebrow', {opacity:0, y:12}, {opacity:1, y:0, duration:.4, ease:'power2.out'}, Math.max(0, line - .3))
+    .fromTo(split.words, {opacity:0, y:40, filter:'blur(8px)'},
+            {opacity:1, y:0, filter:'blur(0px)', duration:.5, ease:'power3.out', stagger:P.wordGap}, line)
+    .fromTo('#headline .key', {color:MV.tok('ink')}, {color:MV.tok('accent'), duration:.3, immediateRender:false}, accent)
+    .fromTo('#headline .key', {y:0}, {y:-12, duration:.18, ease:'power2.out', yoyo:true, repeat:1, immediateRender:false}, accent)
+    .fromTo('#rule', {scaleX:0}, {scaleX:1, duration:.6, ease:'power3.inOut'}, accent + .1);
+});
+</script></body></html>

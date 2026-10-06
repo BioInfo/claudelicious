@@ -1,0 +1,39 @@
+# CONTINUITY — <project name>
+
+<!--
+The project's tactical ledger: the short-term state that has to outlive any one
+session. Distinct from the durable memory store (cross-project, permanent) — this
+is per-repo and answers "what is the state of THIS project right now." A
+PostCompact hook re-injects the head of this file when the window summarizes, so
+keep the top of the file the part you most need to survive. See docs/06.
+-->
+
+**Goal:** <the one-line objective>
+**Phase:** <where we are right now>
+
+---
+
+## Done
+
+- <what shipped, newest first>
+
+## Now
+
+- <the thing in flight right now — the state of it, not a wish>
+
+## Next
+
+- <the first concrete move for whoever picks this up — this is the handoff>
+
+---
+
+## Decisions
+
+<!-- One line each: the decision, why, when. These are what stops a future session
+     from re-litigating a settled call. -->
+
+- <decision> — <why> — <date>
+
+## Open questions
+
+- <a real fork that still needs an answer, with who needs to answer it>

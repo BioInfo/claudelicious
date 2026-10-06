@@ -1,0 +1,56 @@
+<!doctype html>
+<!--
+PATTERN 11 · List with checkmarks (each tick draws itself; the previous item dims)
+USE: steps, requirements, a checklist the narrator walks. One item per narration line.
+PARAMS (P): eyebrow, title, items [[title, sub]], dimPrev.
+CUES: head = MV.cue(1) - 0.6, item i = MV.cue(i + 1).
+AVOID: more than 5 items; items the narrator does not say.
+-->
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../theme.css">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script><script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/DrawSVGPlugin.min.js"></script>
+<script src="../harness.js"></script>
+<style>
+  .wrap{position:absolute;left:var(--pad);top:150px;right:var(--pad)}
+  ul{list-style:none;margin-top:70px;display:flex;flex-direction:column;gap:38px}
+  li{display:flex;align-items:center;gap:36px;font:700 54px/1.15 var(--font-display);letter-spacing:-.015em}
+  .box{flex:none;width:76px;height:76px;border-radius:18px;border:3px solid var(--line);display:grid;place-items:center;background:var(--panel)}
+  .box path{fill:none;stroke:var(--accent);stroke-width:9;stroke-linecap:round;stroke-linejoin:round}
+  li small{display:block;font:400 30px/1.3 var(--font-body);color:var(--muted);margin-top:8px;letter-spacing:0}
+</style></head>
+<body><div id="root" data-composition-id="list-checkmarks" data-start="0" data-duration="8" data-width="1920" data-height="1080">
+  <div class="wrap"><div class="eyebrow" id="eb"></div><div class="h2" id="h" style="margin-top:20px"></div><ul id="list"></ul></div>
+</div>
+<script>
+window.__timelines = window.__timelines || {};
+const P = {
+  eyebrow: 'Checklist',                          // DEMO VALUE
+  title: 'Four things, in order',                // DEMO VALUE
+  items: [ ['First item', 'why it matters'], ['Second item', 'why it matters'],       // DEMO VALUE
+           ['Third item', 'why it matters'], ['Fourth item', 'why it matters'] ],     // DEMO VALUE
+  fallback: [1.0, 2.4, 3.8, 5.2],              // item times when no cues.js
+  dimPrev: 0.55,
+};
+document.getElementById('eb').textContent = P.eyebrow;
+document.getElementById('h').textContent = P.title;
+gsap.registerPlugin(DrawSVGPlugin);
+const list = document.getElementById('list');
+P.items.forEach(([t, s]) => list.insertAdjacentHTML('beforeend',
+  `<li><div class="box"><svg width="46" height="46" viewBox="0 0 46 46"><path d="M9 24 L19 34 L37 12"/></svg></div><div>${t}<small>${s}</small></div></li>`));
+const lis = [...list.children];
+gsap.set(['#eb', '#h', ...lis], {opacity:0}); gsap.set('.box path', {drawSVG:'0%'});
+MV.scene((tl, MV) => {
+  const at = P.items.map((_, i) => MV.cue(i + 2, P.fallback[i])), head = Math.max(0, MV.cue(1, 0.1) - .1);
+  const line = MV.tok('line'), accent = MV.tok('accent');
+  tl.fromTo('#eb, #h', {opacity:0, y:16}, {opacity:1, y:0, duration:.45, stagger:.12, ease:'power2.out'}, head);
+  lis.forEach((li, i) => {
+    tl.fromTo(li, {opacity:0, x:-40}, {opacity:1, x:0, duration:.5, ease:'power3.out'}, at[i])
+      .fromTo(li.querySelector('.box'), {borderColor:line}, {borderColor:accent, duration:.3}, at[i] + .35)
+      .fromTo(li.querySelector('path'), {drawSVG:'0%'}, {drawSVG:'100%', duration:.4, ease:'power2.out'}, at[i] + .4);
+    if (i > 0) tl.fromTo(lis[i - 1], {opacity:1}, {opacity:P.dimPrev, duration:.4, immediateRender:false}, at[i]);
+  });
+  // last beat: everything back to full so the end frame reads as a complete checklist
+  tl.fromTo(lis.slice(0, -1), {opacity:P.dimPrev}, {opacity:1, duration:.5, immediateRender:false}, at.at(-1) + 1.4);
+});
+</script></body></html>

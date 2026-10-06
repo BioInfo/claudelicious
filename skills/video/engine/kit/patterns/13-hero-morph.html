@@ -1,0 +1,61 @@
+<!doctype html>
+<!--
+PATTERN 13 · Hero object morph (one shape carried across beats, changing form)
+USE: the continuity device. One hero object persists and becomes the next idea at each beat, instead of a
+     crossfade between unrelated slides. Pair each form with a 1-3 word caption.
+PARAMS (P): forms [{d, caption, accent}], morph, x/y/scale of the hero per beat (optional).
+CUES: beat i = MV.cue(i + 1). The first form is on screen at frame 0 (no dead frame).
+DETERMINISM: MorphSVG interpolates path data; the same t always yields the same path.
+AVOID: morphing between shapes with no conceptual link; more than ~5 forms in one scene.
+-->
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../theme.css">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script><script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/MorphSVGPlugin.min.js"></script>
+<script src="../harness.js"></script>
+<style>
+  svg{position:absolute;left:0;top:0}
+  #hero{fill:var(--ink)}
+  .cap{position:absolute;left:0;right:0;top:800px;text-align:center}
+  .cap span{position:absolute;left:0;right:0}
+</style></head>
+<body><div id="root" data-composition-id="hero-morph" data-start="0" data-duration="8" data-width="1920" data-height="1080">
+  <svg width="1920" height="1080" viewBox="0 0 1920 1080"><g id="heroG"><path id="hero" d=""/></g></svg>
+  <div class="cap h2" id="caps"></div>
+</div>
+<script>
+window.__timelines = window.__timelines || {};
+const cx = 960, cy = 460, r = 220;
+const circle = `M${cx},${cy - r} A${r},${r} 0 1,1 ${cx - .01},${cy - r} Z`;
+const square = `M${cx - r},${cy - r} L${cx + r},${cy - r} L${cx + r},${cy + r} L${cx - r},${cy + r} Z`;
+const tri = `M${cx},${cy - r * 1.1} L${cx + r * 1.1},${cy + r * .8} L${cx - r * 1.1},${cy + r * .8} Z`;
+const pill = `M${cx - r * 1.4},${cy - r * .45} L${cx + r * 1.4},${cy - r * .45} A${r * .45},${r * .45} 0 0,1 ${cx + r * 1.4},${cy + r * .45} L${cx - r * 1.4},${cy + r * .45} A${r * .45},${r * .45} 0 0,1 ${cx - r * 1.4},${cy - r * .45} Z`;
+const P = {
+  forms: [ {d:circle, caption:'One idea',      accent:false},     // DEMO VALUE
+           {d:square, caption:'becomes a block', accent:false},   // DEMO VALUE
+           {d:tri,    caption:'then a direction', accent:false},  // DEMO VALUE
+           {d:pill,   caption:'then the product', accent:true} ], // DEMO VALUE (the payoff form takes the accent)
+  fallback: [0, 2.0, 4.0, 6.0],
+  morph: 0.8, ease: 'power3.inOut',
+};
+gsap.registerPlugin(MorphSVGPlugin);
+document.getElementById('hero').setAttribute('d', P.forms[0].d);
+const caps = document.getElementById('caps');
+P.forms.forEach(f => caps.insertAdjacentHTML('beforeend', `<span>${f.caption}</span>`));
+const spans = [...caps.children];
+gsap.set(spans, {opacity:0});
+MV.scene((tl, MV) => {
+  const at = P.forms.map((_, i) => MV.cue(i + 1, P.fallback[i]));
+  const ink = MV.tok('ink'), accent = MV.tok('accent');
+  // form 0 is already on screen at frame 0; it breathes in rather than fading from nothing
+  tl.fromTo('#heroG', {scale:.9, svgOrigin:'960 460'}, {scale:1, duration:.8, ease:'power3.out'}, 0)
+    .fromTo(spans[0], {opacity:0, y:20}, {opacity:1, y:0, duration:.4, ease:'power2.out'}, at[0] + .2);
+  for (let i = 1; i < P.forms.length; i++) {
+    const t = at[i];
+    tl.fromTo('#hero', {morphSVG:P.forms[i - 1].d}, {morphSVG:P.forms[i].d, duration:P.morph, ease:P.ease, immediateRender:false}, t)
+      .fromTo('#hero', {fill:P.forms[i - 1].accent ? accent : ink}, {fill:P.forms[i].accent ? accent : ink, duration:P.morph, immediateRender:false}, t)
+      .fromTo(spans[i - 1], {opacity:1, y:0}, {opacity:0, y:-20, duration:.3, ease:'power2.in', immediateRender:false}, t)
+      .fromTo(spans[i], {opacity:0, y:20}, {opacity:1, y:0, duration:.4, ease:'power2.out', immediateRender:false}, t + .35);
+  }
+});
+</script></body></html>

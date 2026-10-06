@@ -1,0 +1,5 @@
+hf/node_modules/
+lib/.venv/
+.pytest_cache/
+films/
+out/

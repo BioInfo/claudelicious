@@ -1,0 +1,52 @@
+<!doctype html>
+<!--
+PATTERN 08 · Section label swap (lower-right chip; seeded scramble at a chapter change)
+USE: the scene template's .section-label, animated: clip-in, then a scramble swap to the next chapter name.
+PARAMS (P): labels [{n,t}], seed, swapDur.
+CUES: in = MV.cue(1) - 0.4, swap = MV.cue(2) (the line that opens the new section), out = optional.
+DETERMINISM: glyphs come from MV.rng(P.seed + step), so every seek to t draws the same characters.
+-->
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../theme.css">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+<script src="../harness.js"></script>
+<style>
+  .under{position:absolute;left:var(--pad);top:380px;color:var(--dim)}
+  .section-label .t{min-width:420px}
+</style></head>
+<body><div id="root" data-composition-id="section-label" data-start="0" data-duration="6" data-width="1920" data-height="1080">
+  <div class="under h1">(any scene underneath)</div>
+  <div class="section-label" id="section"><span class="bar" id="bar"></span><span class="idx" id="idx"></span><span class="t" id="txt"></span></div>
+</div>
+<script>
+window.__timelines = window.__timelines || {};
+const P = {
+  labels: [ {n:'02', t:'Section two'}, {n:'03', t:'Section three'} ],   // DEMO VALUE
+  seed: 7, swapDur: 0.8, outAt: null,        // outAt: seconds, or null to keep the label up
+};
+const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ#%&*+=<>/';
+// char i is revealed once p passes i/len; otherwise a glyph picked by a seeded PRNG for this 1/24 s step
+const scramble = (from, to, p) => {
+  if (p >= 1) return to;
+  const n = Math.max(from.length, to.length), step = Math.floor(p * 24), r = MV.rng(P.seed * 1000 + step);
+  let out = '';
+  for (let i = 0; i < n; i++) {
+    const g = GLYPHS[Math.floor(r() * GLYPHS.length)];
+    if (i < Math.floor(p * n)) out += to[i] || ''; else if (to[i] === ' ' || from[i] === ' ') out += ' '; else out += g;
+  }
+  return out.trimEnd();
+};
+const txt = document.getElementById('txt'), idx = document.getElementById('idx');
+txt.textContent = P.labels[0].t; idx.textContent = P.labels[0].n;
+gsap.set('#section', {clipPath:'inset(0 100% 0 0)'});
+MV.scene((tl, MV) => {
+  const tin = Math.max(0, MV.cue(1, 0.8) - .4), swap = MV.cue(2, 3.0), o = {p:0};
+  tl.fromTo('#section', {clipPath:'inset(0 100% 0 0)', x:20}, {clipPath:'inset(0 0% 0 0)', x:0, duration:.6, ease:'power3.out'}, tin)
+    .fromTo('#bar', {scaleY:0}, {scaleY:1, duration:.35, ease:'power2.out'}, tin + .25)
+    .fromTo(o, {p:0}, {p:1, duration:P.swapDur, ease:'none', onUpdate:() => {
+        txt.textContent = o.p <= 0 ? P.labels[0].t : scramble(P.labels[0].t, P.labels[1].t, o.p);
+        idx.textContent = o.p < .15 ? P.labels[0].n : P.labels[1].n; }}, swap);
+  if (P.outAt !== null) tl.fromTo('#section', {opacity:1}, {opacity:0, duration:.4, immediateRender:false}, P.outAt);
+});
+</script></body></html>

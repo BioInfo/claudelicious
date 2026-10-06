@@ -1,0 +1,56 @@
+<!doctype html>
+<!--
+SCENE TEMPLATE. `mvid scene <slug> <id>` copies it to films/<slug>/scenes/<id>/index.html. The scene dir
+holds a relative symlink _kit -> ../../_kit (the renderer serves only the scene dir; "../" asset paths 404).
+GSAP loads from the jsDelivr CDN at a pinned version, so rendering needs network access. Then:
+  1. set data-composition-id="<id>" and data-duration (= audio/cues.json "total"; reel/loop: the length you want);
+  2. replace the CONTENT block (paste from _kit/patterns/*), keep the HUD and section label;
+  3. key every beat off narration: MV.cue(i) = line i start, MV.word(i, n) = word n of line i, MV.wordOf(i,'word').
+     The second argument is a fallback used only when audio/cues.js is absent (a scene not voiced yet).
+  4. a scene with no narration (reel, loop): delete the audio/cues.js script tag (hyperframes check fails on the 404).
+Numbers and names on screen come from the film's KIT.md only.
+-->
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="_kit/tokens.css">
+<link rel="stylesheet" href="_kit/theme.css">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+<script src="audio/cues.js"></script>
+<script src="film.js"></script>
+<script src="_kit/harness.js"></script>
+<style>
+  .content{position:absolute;left:var(--pad);right:var(--pad);top:360px}
+</style></head>
+<body>
+<div id="root" data-composition-id="scene-id" data-start="0" data-width="1920" data-height="1080" data-duration="6">
+
+  <!-- CONTENT: replace with a pattern body -->
+  <div class="content">
+    <div class="eyebrow" id="eyebrow">Eyebrow label</div>
+    <h1 class="h1" id="headline" style="margin-top:36px">A headline with one <span class="em accent">emphasis</span> word.</h1>
+  </div>
+
+  <!-- SECTION LABEL (lower right) -->
+  <div class="section-label" id="section"><span class="bar"></span><span class="idx">01</span><span>Section name</span></div>
+
+  <!-- HUD -->
+  <div class="hud" id="hud">
+    <i class="hud-crop tl"></i><i class="hud-crop tr"></i><i class="hud-crop bl"></i><i class="hud-crop br"></i>
+    <div class="hud-label hud-tl"><b>01</b> / CHAPTER NAME</div>
+    <div class="hud-label hud-tr">FILM TITLE</div>
+    <div class="hud-label hud-bl" id="hudTc">00:00:00</div>
+    <div class="hud-label hud-br">1920×1080 · 30FPS</div>
+    <div class="hud-bar" id="hudBar"><i></i></div>
+  </div>
+</div>
+<script>
+window.__timelines = window.__timelines || {};   // registry init; hyperframes lint looks for this line, MV.scene fills the key
+// Hidden initial states live outside the timeline.
+gsap.set(['#eyebrow', '#headline', '#section'], {opacity:0});
+MV.scene((tl, MV) => {
+  const L1 = MV.cue(1, 0.8);                    // narration line 1 start (fallback 0.8s)
+  MV.hud(tl);                                    // progress bar + timecode, a pure function of time
+  tl.fromTo('#eyebrow',  {opacity:0, y:12}, {opacity:1, y:0, duration:.4, ease:'power2.out'}, L1 - .3)
+    .fromTo('#headline', {opacity:0, y:40}, {opacity:1, y:0, duration:.6, ease:'power3.out'}, L1)
+    .fromTo('#section',  {opacity:0, x:24}, {opacity:1, x:0, duration:.5, ease:'power3.out'}, L1 + .4);
+});
+</script></body></html>
